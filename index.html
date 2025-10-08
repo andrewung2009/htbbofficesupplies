@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stationery Borrowing Log</title>
+    <title>Stationery Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Firebase SDK -->
@@ -15,49 +15,234 @@
             --secondary-color: #3f37c9;
             --success-color: #06ffa5;
             --danger-color: #ff006e;
+            --warning-color: #ffbe0b;
             --light-bg: #f8f9fa;
             --dark-text: #212529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light-bg);
             color: var(--dark-text);
-            padding-bottom: 2rem;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .header {
+        /* Landing Screen Styles */
+        .landing-screen {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .landing-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .landing-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .choice-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .choice-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .choice-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .choice-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .choice-description {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        /* Floating shapes for decoration */
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: white;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: white;
+            top: 50%;
+            right: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* App Sections */
+        .app-section {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Header Styles */
+        .app-header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
+            padding: 1.5rem 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        /* Borrowing Form Styles */
+        .borrowing-container {
+            padding: 2rem 0;
+        }
+
         .card {
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: none;
             margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card-header {
             background-color: white;
             border-bottom: 2px solid var(--primary-color);
             font-weight: 600;
-            padding: 1rem 1.5rem;
-            border-radius: 10px 10px 0 0 !important;
+            padding: 1.25rem 1.5rem;
+            border-radius: 15px 15px 0 0 !important;
         }
 
         .form-label {
             font-weight: 500;
             margin-bottom: 0.5rem;
+            color: var(--dark-text);
         }
 
         .form-control, .form-select {
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid #ced4da;
             padding: 0.75rem;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus, .form-select:focus {
@@ -70,34 +255,38 @@
             border-color: var(--primary-color);
             padding: 0.75rem 1.5rem;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             background-color: var(--secondary-color);
             border-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
         .btn-success {
-            background-color: #06ffa5;
+            background-color: var(--success-color);
             color: var(--dark-text);
             border: none;
             padding: 0.5rem 1rem;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
 
         .btn-success:hover {
             background-color: #00e894;
             color: var(--dark-text);
+            transform: translateY(-2px);
         }
 
         .stationery-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
             background-color: white;
             border: 1px solid #e9ecef;
             transition: all 0.3s ease;
@@ -105,54 +294,277 @@
 
         .stationery-item:hover {
             background-color: #f8f9fa;
-            transform: translateY(-2px);
+            transform: translateX(5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
         .stationery-item input[type="checkbox"] {
-            margin-right: 0.75rem;
+            margin-right: 1rem;
             width: 1.25rem;
             height: 1.25rem;
+            cursor: pointer;
         }
 
         .stationery-item label {
             margin: 0;
             cursor: pointer;
             flex-grow: 1;
+            font-weight: 500;
         }
 
         .stationery-icon {
-            margin-right: 0.75rem;
+            margin-right: 1rem;
             color: var(--primary-color);
-            font-size: 1.25rem;
+            font-size: 1.5rem;
         }
 
-        .log-table {
+        .stationery-quantity {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .quantity-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            margin-left: 0.5rem;
+            min-width: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .quantity-low {
+            background-color: var(--danger-color);
+        }
+
+        .quantity-medium {
+            background-color: var(--warning-color);
+        }
+
+        .quantity-high {
+            background-color: var(--success-color);
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-container {
+            padding: 2rem 0;
+        }
+
+        .sidebar {
+            background-color: white;
+            min-height: calc(100vh - 100px);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-right: 1.5rem;
+        }
+
+        .sidebar .nav-link {
+            color: var(--dark-text);
+            padding: 0.75rem 1rem;
             border-radius: 10px;
-            overflow: hidden;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
         }
 
-        .log-table thead {
+        .sidebar .nav-link:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
             background-color: var(--primary-color);
             color: white;
         }
 
-        .log-table th {
+        .sidebar .nav-link i {
+            margin-right: 0.75rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.primary {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-icon.success {
+            background-color: rgba(6, 255, 165, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-icon.warning {
+            background-color: rgba(255, 190, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .stat-icon.danger {
+            background-color: rgba(255, 0, 110, 0.1);
+            color: var(--danger-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-icon.edit {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .btn-icon.delete {
+            background-color: rgba(255, 0, 110, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Table Styles */
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .table th {
             border: none;
             padding: 1rem;
             font-weight: 500;
         }
 
-        .log-table td {
+        .table td {
             padding: 1rem;
             vertical-align: middle;
         }
 
-        .log-table tbody tr {
+        .table tbody tr {
             border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.3s ease;
         }
 
-        .log-table tbody tr:hover {
+        .table tbody tr:hover {
             background-color: #f8f9fa;
         }
 
@@ -177,51 +589,57 @@
             color: #721c24;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #6c757d;
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #dee2e6;
+        .modal-header {
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+            border-radius: 20px 20px 0 0;
         }
 
-        .filter-container {
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 1.5rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Login Modal */
+        .login-modal .modal-dialog {
+            max-width: 400px;
+        }
+
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
         }
 
-        .search-box {
-            position: relative;
-            flex-grow: 1;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-
-        .search-box input {
-            padding-left: 2.5rem;
-        }
-
+        /* Toast Styles */
         .toast-container {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1050;
+            z-index: 9999;
         }
 
         .custom-toast {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             padding: 1rem;
             margin-bottom: 1rem;
@@ -277,6 +695,7 @@
             cursor: pointer;
         }
 
+        /* Connection Status */
         .connection-status {
             position: fixed;
             bottom: 20px;
@@ -304,134 +723,297 @@
             margin-right: 0.5rem;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .filter-container {
-                flex-direction: column;
+            .landing-title {
+                font-size: 2rem;
             }
-            
-            .log-table {
+
+            .choice-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .choice-card {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .sidebar {
+                margin-right: 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .table {
                 font-size: 0.875rem;
             }
-            
-            .log-table th, .log-table td {
+
+            .table th, .table td {
                 padding: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h1 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Stationery Borrowing Log</h1>
-                    <p class="mb-0 mt-2">Track and manage stationery borrowing efficiently</p>
-                </div>
-                <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                    <div class="d-inline-block text-start">
-                        <div class="small">Total Items Borrowed</div>
-                        <div class="h3 mb-0" id="totalBorrowed">0</div>
+    <!-- Landing Screen -->
+    <div id="landingScreen" class="landing-screen">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        
+        <div class="landing-content">
+            <h1 class="landing-title">
+                <i class="bi bi-clipboard-check me-3"></i>Stationery Management System
+            </h1>
+            <p class="landing-subtitle">Efficiently track and manage stationery borrowing</p>
+            
+            <div class="choice-buttons">
+                <div class="choice-card" onclick="showBorrowingForm()">
+                    <div class="choice-icon">
+                        <i class="bi bi-pencil-square"></i>
                     </div>
-                    <div class="d-inline-block text-start ms-4">
-                        <div class="small">Pending Returns</div>
-                        <div class="h3 mb-0" id="pendingReturns">0</div>
+                    <h3 class="choice-title">Borrow Stationery</h3>
+                    <p class="choice-description">Request to borrow stationery items for your needs</p>
+                </div>
+                
+                <div class="choice-card" onclick="showAdminLogin()">
+                    <div class="choice-icon">
+                        <i class="bi bi-gear-fill"></i>
+                    </div>
+                    <h3 class="choice-title">Admin Portal</h3>
+                    <p class="choice-description">Manage inventory, add items, and view records</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrowing Form Section -->
+    <div id="borrowingSection" class="app-section">
+        <header class="app-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Borrow Stationery
+                        </h1>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a href="#" class="back-button" onclick="showLandingScreen()">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container borrowing-container">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-clipboard-plus me-2"></i>Borrowing Request Form
+                        </div>
+                        <div class="card-body">
+                            <form id="borrowForm">
+                                <div class="mb-3">
+                                    <label for="borrowerName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="borrowerName" placeholder="Enter your name" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="purpose" class="form-label">Purpose</label>
+                                    <textarea class="form-control" id="purpose" rows="2" placeholder="What is the purpose of borrowing?" required></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="borrowDate" class="form-label">Borrow Date</label>
+                                    <input type="datetime-local" class="form-control" id="borrowDate" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="returnDate" class="form-label">Expected Return Date</label>
+                                    <input type="datetime-local" class="form-control" id="returnDate" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Select Items to Borrow</label>
+                                    <div class="stationery-list" id="stationeryList">
+                                        <!-- Items will be loaded dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-check-circle me-2"></i>Submit Request
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-clock-history me-2"></i>Recent Borrowing Records
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Borrower</th>
+                                            <th>Items</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentBorrowingTable">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">Loading records...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-5">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-pencil-square me-2"></i>Borrow Stationery
+    <!-- Admin Dashboard Section -->
+    <div id="adminSection" class="app-section">
+        <header class="app-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="mb-0">
+                            <i class="bi bi-gear-fill me-2"></i>Admin Dashboard
+                        </h1>
                     </div>
-                    <div class="card-body">
-                        <form id="borrowForm">
-                            <div class="mb-3">
-                                <label for="borrowerName" class="form-label">Borrower Name</label>
-                                <input type="text" class="form-control" id="borrowerName" placeholder="Enter your name" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="purpose" class="form-label">Purpose</label>
-                                <textarea class="form-control" id="purpose" rows="2" placeholder="What is the purpose of borrowing?" required></textarea>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="borrowDate" class="form-label">Borrow Date</label>
-                                <input type="datetime-local" class="form-control" id="borrowDate" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="returnDate" class="form-label">Expected Return Date</label>
-                                <input type="datetime-local" class="form-control" id="returnDate" required>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label class="form-label">Select Stationery Items</label>
-                                <div class="stationery-list">
-                                    <div class="stationery-item">
-                                        <i class="bi bi-pen stationery-icon"></i>
-                                        <input type="checkbox" id="pen" name="stationery" value="Pen">
-                                        <label for="pen">Pen</label>
-                                    </div>
-                                    <div class="stationery-item">
-                                        <i class="bi bi-highlighter stationery-icon"></i>
-                                        <input type="checkbox" id="markerPen" name="stationery" value="Marker Pen">
-                                        <label for="markerPen">Marker Pen</label>
-                                    </div>
-                                    <div class="stationery-item">
-                                        <i class="bi bi-sticky stationery-icon"></i>
-                                        <input type="checkbox" id="maskingTape" name="stationery" value="Masking Tape">
-                                        <label for="maskingTape">Masking Tape</label>
-                                    </div>
-                                    <div class="stationery-item">
-                                        <i class="bi bi-file-earmark-text stationery-icon"></i>
-                                        <input type="checkbox" id="mahjongPaper" name="stationery" value="Mahjong Paper">
-                                        <label for="mahjongPaper">Mahjong Paper</label>
-                                    </div>
-                                    <div class="stationery-item">
-                                        <i class="bi bi-journal-text stationery-icon"></i>
-                                        <input type="checkbox" id="stickyNote" name="stationery" value="Sticky Note">
-                                        <label for="stickyNote">Sticky Note</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-check-circle me-2"></i>Submit Borrow Request
-                            </button>
-                        </form>
+                    <div class="col-md-6 text-md-end">
+                        <a href="#" class="back-button" onclick="showLandingScreen()">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Home
+                        </a>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-7">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-list-ul me-2"></i>Borrowing Log
+        </header>
+
+        <div class="container admin-container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="sidebar">
+                        <nav class="nav flex-column">
+                            <a class="nav-link active" href="#" onclick="showAdminSection('dashboard')">
+                                <i class="bi bi-speedometer2"></i>Dashboard
+                            </a>
+                            <a class="nav-link" href="#" onclick="showAdminSection('items')">
+                                <i class="bi bi-box"></i>Manage Items
+                            </a>
+                            <a class="nav-link" href="#" onclick="showAdminSection('inventory')">
+                                <i class="bi bi-stack"></i>Inventory
+                            </a>
+                            <a class="nav-link" href="#" onclick="showAdminSection('records')">
+                                <i class="bi bi-clock-history"></i>All Records
+                            </a>
+                        </nav>
                     </div>
-                    <div class="card-body">
-                        <div class="filter-container">
-                            <div class="search-box">
-                                <i class="bi bi-search"></i>
-                                <input type="text" class="form-control" id="searchInput" placeholder="Search by borrower name or purpose...">
-                            </div>
-                            <select class="form-select" id="statusFilter" style="width: auto;">
-                                <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="returned">Returned</option>
-                                <option value="overdue">Overdue</option>
-                            </select>
-                        </div>
+                </div>
+
+                <div class="col-md-9">
+                    <!-- Dashboard Section -->
+                    <div id="adminDashboard" class="content-section active">
+                        <h2 class="mb-4">Dashboard Overview</h2>
                         
+                        <div class="row">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon primary">
+                                        <i class="bi bi-box"></i>
+                                    </div>
+                                    <div class="stat-value" id="totalItems">0</div>
+                                    <div class="stat-label">Total Items</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon success">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="stat-value" id="availableItems">0</div>
+                                    <div class="stat-label">Available Items</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon warning">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </div>
+                                    <div class="stat-value" id="activeBorrows">0</div>
+                                    <div class="stat-label">Active Borrows</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon danger">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="stat-value" id="lowStock">0</div>
+                                    <div class="stat-label">Low Stock Items</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-graph-up me-2"></i>Recent Activity
+                            </div>
+                            <div class="card-body">
+                                <div id="recentActivity">
+                                    <p class="text-muted">Loading recent activity...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Section -->
+                    <div id="adminItems" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>Manage Stationery Items</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                                <i class="bi bi-plus-circle me-2"></i>Add New Item
+                            </button>
+                        </div>
+
+                        <div id="itemsList">
+                            <p class="text-muted">Loading items...</p>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Section -->
+                    <div id="adminInventory" class="content-section">
+                        <h2 class="mb-4">Inventory Management</h2>
+                        <div id="inventoryList">
+                            <p class="text-muted">Loading inventory...</p>
+                        </div>
+                    </div>
+
+                    <!-- Records Section -->
+                    <div id="adminRecords" class="content-section">
+                        <h2 class="mb-4">All Borrowing Records</h2>
+                        
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="recordsSearch" placeholder="Search by borrower name or purpose...">
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
-                            <table class="table log-table">
+                            <table class="table">
                                 <thead>
                                     <tr>
+                                        <th>ID</th>
                                         <th>Borrower</th>
                                         <th>Items</th>
                                         <th>Purpose</th>
@@ -441,16 +1023,12 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="logTableBody">
-                                    <!-- Log entries will be added here dynamically -->
+                                <tbody id="recordsTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Loading records...</td>
+                                    </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        
-                        <div class="empty-state" id="emptyState">
-                            <i class="bi bi-inbox"></i>
-                            <h5>No borrowing records yet</h5>
-                            <p>Start by adding a new borrowing request using the form.</p>
                         </div>
                     </div>
                 </div>
@@ -458,28 +1036,154 @@
         </div>
     </div>
 
+    <!-- Admin Login Modal -->
+    <div class="modal fade login-modal" id="adminLoginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="login-icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <form id="adminLoginForm">
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">Admin Password</label>
+                            <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal fade" id="addItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Stationery Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addItemForm">
+                        <div class="mb-3">
+                            <label for="itemName" class="form-label">Item Name</label>
+                            <input type="text" class="form-control" id="itemName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemIcon" class="form-label">Icon</label>
+                            <select class="form-select" id="itemIcon" required>
+                                <option value="">Select an icon</option>
+                                <option value="bi-pen">Pen</option>
+                                <option value="bi-highlighter">Highlighter</option>
+                                <option value="bi-sticky">Tape</option>
+                                <option value="bi-file-earmark-text">Paper</option>
+                                <option value="bi-journal-text">Notebook</option>
+                                <option value="bi-pencil">Pencil</option>
+                                <option value="bi-eraser">Eraser</option>
+                                <option value="bi-ruler">Ruler</option>
+                                <option value="bi-scissors">Scissors</option>
+                                <option value="bi-clipboard">Clipboard</option>
+                                <option value="bi-calculator">Calculator</option>
+                                <option value="bi-mouse">Mouse</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemQuantity" class="form-label">Initial Quantity</label>
+                            <input type="number" class="form-control" id="itemQuantity" min="0" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewItem()">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div class="modal fade" id="editItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Stationery Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editItemForm">
+                        <input type="hidden" id="editItemId">
+                        <div class="mb-3">
+                            <label for="editItemName" class="form-label">Item Name</label>
+                            <input type="text" class="form-control" id="editItemName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editItemIcon" class="form-label">Icon</label>
+                            <select class="form-select" id="editItemIcon" required>
+                                <option value="">Select an icon</option>
+                                <option value="bi-pen">Pen</option>
+                                <option value="bi-highlighter">Highlighter</option>
+                                <option value="bi-sticky">Tape</option>
+                                <option value="bi-file-earmark-text">Paper</option>
+                                <option value="bi-journal-text">Notebook</option>
+                                <option value="bi-pencil">Pencil</option>
+                                <option value="bi-eraser">Eraser</option>
+                                <option value="bi-ruler">Ruler</option>
+                                <option value="bi-scissors">Scissors</option>
+                                <option value="bi-clipboard">Clipboard</option>
+                                <option value="bi-calculator">Calculator</option>
+                                <option value="bi-mouse">Mouse</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateItem()">Update Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Connection Status -->
     <div class="connection-status disconnected" id="connectionStatus">
         <i class="bi bi-wifi-off"></i>
         <span>Disconnected</span>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Firebase configuration with your provided details
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCeQQz9A6r3gMRWR-gQ4G62sMG3HO9NK70",
             authDomain: "stationery-htbb.firebaseapp.com",
             databaseURL: "https://stationery-htbb-default-rtdb.firebaseio.com/",
             projectId: "stationery-htbb",
             storageBucket: "stationery-htbb.appspot.com",
-            messagingSenderId: "123456789012", // Replace with your actual sender ID
-            appId: "1:123456789012:web:abcdef123456789012345678" // Replace with your actual app ID
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456789012345678"
         };
 
         // Initialize Firebase
-        let database, borrowingLogRef;
+        let database, borrowingLogRef, inventoryRef, itemsRef;
         let borrowingLog = [];
         let nextId = 1;
+        let inventory = {};
+        let items = {};
+
+        // Admin password updated to "htbb"
+        const ADMIN_PASSWORD = "htbb";
 
         // Initialize Firebase connection
         function initializeFirebase() {
@@ -487,9 +1191,11 @@
                 firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
                 borrowingLogRef = database.ref('borrowingLog');
+                inventoryRef = database.ref('inventory');
+                itemsRef = database.ref('items');
                 
-                // Set up Firebase listener
-                setupFirebaseListener();
+                // Set up Firebase listeners
+                setupFirebaseListeners();
                 
                 // Update connection status
                 updateConnectionStatus(true);
@@ -500,28 +1206,12 @@
             }
         }
 
-        // Set default date and time
-        document.addEventListener('DOMContentLoaded', function() {
-            const now = new Date();
-            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('borrowDate').value = localDateTime;
-            
-            // Set default return date to 3 days from now
-            const returnDate = new Date(now);
-            returnDate.setDate(now.getDate() + 3);
-            const returnDateTime = new Date(returnDate.getTime() - returnDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('returnDate').value = returnDateTime;
-            
-            // Initialize Firebase
-            initializeFirebase();
-        });
-
-        // Set up Firebase listener for real-time updates
-        function setupFirebaseListener() {
+        // Set up Firebase listeners
+        function setupFirebaseListeners() {
+            // Listen for borrowing log changes
             borrowingLogRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    // Convert object to array
                     borrowingLog = Object.keys(data).map(key => ({
                         id: parseInt(key),
                         ...data[key]
@@ -536,37 +1226,148 @@
                     nextId = 1;
                 }
                 
-                // Update UI
-                renderLog();
-                updateStats();
+                updateDashboardStats();
+                updateRecordsTable();
+                updateRecentActivity();
+                updateRecentBorrowingTable();
+            });
+
+            // Listen for inventory changes
+            inventoryRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    inventory = data;
+                } else {
+                    inventory = {};
+                }
                 
-                // Update connection status
-                updateConnectionStatus(true);
-            }, (error) => {
-                console.error("Firebase error:", error);
-                updateConnectionStatus(false);
-                showToast('error', 'Connection Error', 'Failed to connect to the database. Please check your connection.');
+                updateDashboardStats();
+                renderInventory();
+                updateStationeryQuantities();
+            });
+
+            // Listen for items changes
+            itemsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    items = data;
+                } else {
+                    // Initialize with default items if none exist
+                    initializeDefaultItems();
+                }
+                
+                updateDashboardStats();
+                renderItems();
+                renderInventory();
+                renderStationeryItems();
+                updateStationeryQuantities();
             });
         }
 
-        // Update connection status indicator
-        function updateConnectionStatus(isConnected) {
-            const statusElement = document.getElementById('connectionStatus');
-            if (isConnected) {
-                statusElement.className = 'connection-status connected';
-                statusElement.innerHTML = '<i class="bi bi-wifi"></i><span>Connected to Firebase</span>';
-            } else {
-                statusElement.className = 'connection-status disconnected';
-                statusElement.innerHTML = '<i class="bi bi-wifi-off"></i><span>Disconnected</span>';
-            }
+        // Initialize default items if none exist
+        function initializeDefaultItems() {
+            const defaultItems = {
+                pen: { name: 'Pen', icon: 'bi-pen' },
+                markerPen: { name: 'Marker Pen', icon: 'bi-highlighter' },
+                maskingTape: { name: 'Masking Tape', icon: 'bi-sticky' },
+                mahjongPaper: { name: 'Mahjong Paper', icon: 'bi-file-earmark-text' },
+                stickyNote: { name: 'Sticky Note', icon: 'bi-journal-text' }
+            };
+            
+            itemsRef.set(defaultItems);
+            
+            // Initialize inventory with default quantities
+            const defaultInventory = {};
+            Object.keys(defaultItems).forEach(key => {
+                defaultInventory[key] = 10;
+            });
+            
+            inventoryRef.set(defaultInventory);
         }
 
-        // Form submission
+        // Navigation functions
+        function showLandingScreen() {
+            hideAllSections();
+            document.getElementById('landingScreen').style.display = 'flex';
+        }
+
+        function showBorrowingForm() {
+            hideAllSections();
+            document.getElementById('borrowingSection').classList.add('active');
+            setDefaultDates();
+        }
+
+        function showAdminLogin() {
+            const modal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+            modal.show();
+        }
+
+        function showAdminSection(sectionId) {
+            // Hide all admin sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById('admin' + sectionId.charAt(0).toUpperCase() + sectionId.slice(1)).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+        }
+
+        function hideAllSections() {
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('borrowingSection').classList.remove('active');
+            document.getElementById('adminSection').classList.remove('active');
+        }
+
+        // Set default dates for borrowing form
+        function setDefaultDates() {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('borrowDate').value = localDateTime;
+            
+            // Set default return date to 3 days from now
+            const returnDate = new Date(now);
+            returnDate.setDate(now.getDate() + 3);
+            const returnDateTime = new Date(returnDate.getTime() - returnDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('returnDate').value = returnDateTime;
+        }
+
+        // Admin login form submission
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+                document.getElementById('adminPassword').value = '';
+                
+                // Show admin dashboard
+                hideAllSections();
+                document.getElementById('adminSection').classList.add('active');
+                
+                // Initialize Firebase if not already done
+                if (!database) {
+                    initializeFirebase();
+                }
+            } else {
+                showToast('error', 'Login Failed', 'Invalid password. Please try again.');
+            }
+        });
+
+        // Borrowing form submission
         document.getElementById('borrowForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             if (!borrowingLogRef) {
-                showToast('error', 'Not Connected', 'Please wait for Firebase to initialize.');
+                showToast('error', 'Not Connected', 'Please wait for the system to initialize.');
                 return;
             }
             
@@ -585,9 +1386,28 @@
                 return;
             }
             
+            // Check if selected items are available
+            let itemsAvailable = true;
+            let unavailableItems = [];
+            let selectedItemIds = [];
+            
             checkboxes.forEach(checkbox => {
-                selectedItems.push(checkbox.value);
+                const itemId = checkbox.id;
+                const quantity = inventory[itemId] || 0;
+                
+                if (quantity <= 0) {
+                    itemsAvailable = false;
+                    unavailableItems.push(checkbox.value);
+                } else {
+                    selectedItems.push(checkbox.value);
+                    selectedItemIds.push(itemId);
+                }
             });
+            
+            if (!itemsAvailable) {
+                showToast('error', 'Items Unavailable', `The following items are out of stock: ${unavailableItems.join(', ')}`);
+                return;
+            }
             
             // Create new log entry
             const newEntry = {
@@ -603,21 +1423,25 @@
             // Add to Firebase
             borrowingLogRef.child(nextId).set(newEntry)
                 .then(() => {
-                    // Reset form
-                    this.reset();
+                    // Update inventory quantities
+                    const inventoryUpdates = {};
+                    selectedItemIds.forEach(itemId => {
+                        inventoryUpdates[itemId] = (inventory[itemId] || 0) - 1;
+                    });
                     
-                    // Set default dates again
-                    const now = new Date();
-                    const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-                    document.getElementById('borrowDate').value = localDateTime;
-                    
-                    const returnDateDefault = new Date(now);
-                    returnDateDefault.setDate(now.getDate() + 3);
-                    const returnDateTime = new Date(returnDateDefault.getTime() - returnDateDefault.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-                    document.getElementById('returnDate').value = returnDateTime;
-                    
-                    // Show success message
-                    showToast('success', 'Borrow Request Submitted', 'Your request has been recorded successfully.');
+                    inventoryRef.update(inventoryUpdates)
+                        .then(() => {
+                            // Reset form
+                            this.reset();
+                            setDefaultDates();
+                            
+                            // Show success message
+                            showToast('success', 'Request Submitted', 'Your borrowing request has been recorded successfully.');
+                        })
+                        .catch((error) => {
+                            console.error("Error updating inventory:", error);
+                            showToast('error', 'Inventory Error', 'Failed to update inventory quantities.');
+                        });
                 })
                 .catch((error) => {
                     console.error("Error adding document: ", error);
@@ -625,48 +1449,403 @@
                 });
         });
 
-        // Render log table
-        function renderLog() {
-            const logTableBody = document.getElementById('logTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
+        // Render stationery items dynamically
+        function renderStationeryItems() {
+            const stationeryList = document.getElementById('stationeryList');
+            stationeryList.innerHTML = '';
             
-            // Filter log entries
-            let filteredLog = borrowingLog.filter(entry => {
-                const matchesSearch = entry.borrowerName.toLowerCase().includes(searchTerm) || 
-                                     entry.purpose.toLowerCase().includes(searchTerm);
-                const matchesStatus = statusFilter === 'all' || entry.status === statusFilter;
-                return matchesSearch && matchesStatus;
+            if (Object.keys(items).length === 0) {
+                stationeryList.innerHTML = '<p class="text-muted">No stationery items available. Please contact admin.</p>';
+                return;
+            }
+            
+            Object.entries(items).forEach(([id, item]) => {
+                const quantity = inventory[id] || 0;
+                let quantityClass = 'quantity-high';
+                
+                if (quantity <= 3) {
+                    quantityClass = 'quantity-low';
+                } else if (quantity <= 6) {
+                    quantityClass = 'quantity-medium';
+                }
+                
+                const stationeryItem = document.createElement('div');
+                stationeryItem.className = 'stationery-item';
+                stationeryItem.innerHTML = `
+                    <i class="bi ${item.icon} stationery-icon"></i>
+                    <input type="checkbox" id="${id}" name="stationery" value="${item.name}" ${quantity <= 0 ? 'disabled' : ''}>
+                    <label for="${id}">${item.name}</label>
+                    <div class="stationery-quantity">
+                        <span>Available:</span>
+                        <span class="quantity-badge ${quantityClass}" id="${id}-quantity">${quantity}</span>
+                    </div>
+                `;
+                
+                stationeryList.appendChild(stationeryItem);
+            });
+        }
+
+        // Update stationery quantities
+        function updateStationeryQuantities() {
+            Object.entries(items).forEach(([id, item]) => {
+                const quantity = inventory[id] || 0;
+                const badge = document.getElementById(`${id}-quantity`);
+                const checkbox = document.getElementById(id);
+                
+                if (badge) {
+                    badge.textContent = quantity;
+                    badge.classList.remove('quantity-low', 'quantity-medium', 'quantity-high');
+                    
+                    if (quantity <= 3) {
+                        badge.classList.add('quantity-low');
+                    } else if (quantity <= 6) {
+                        badge.classList.add('quantity-medium');
+                    } else {
+                        badge.classList.add('quantity-high');
+                    }
+                }
+                
+                if (checkbox) {
+                    if (quantity <= 0) {
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                }
+            });
+        }
+
+        // Update recent borrowing table
+        function updateRecentBorrowingTable() {
+            const tableBody = document.getElementById('recentBorrowingTable');
+            
+            // Get recent records (last 5)
+            const recent = [...borrowingLog]
+                .sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate))
+                .slice(0, 5);
+            
+            if (recent.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No records found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            recent.forEach(entry => {
+                const statusClass = entry.status === 'returned' ? 'badge-returned' : 
+                                   entry.status === 'overdue' ? 'badge-overdue' : 'badge-pending';
+                
+                const actionButton = entry.status !== 'returned' ? 
+                    `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
+                        <i class="bi bi-check-circle me-1"></i>Return
+                    </button>` : 
+                    '<span class="text-muted">Returned</span>';
+                
+                html += `
+                    <tr>
+                        <td>${entry.borrowerName}</td>
+                        <td>${entry.items.join(', ')}</td>
+                        <td><span class="badge ${statusClass}">${entry.status}</span></td>
+                        <td>${actionButton}</td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+
+        // Admin functions
+        function updateDashboardStats() {
+            const totalItems = Object.keys(items).length;
+            const availableItems = Object.values(inventory).reduce((sum, qty) => sum + qty, 0);
+            const activeBorrows = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue').length;
+            const lowStock = Object.values(inventory).filter(qty => qty <= 3).length;
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('availableItems').textContent = availableItems;
+            document.getElementById('activeBorrows').textContent = activeBorrows;
+            document.getElementById('lowStock').textContent = lowStock;
+        }
+
+        function updateRecentActivity() {
+            const recentActivity = document.getElementById('recentActivity');
+            
+            if (borrowingLog.length === 0) {
+                recentActivity.innerHTML = '<p class="text-muted">No recent activity</p>';
+                return;
+            }
+            
+            // Sort by date (newest first) and take last 5
+            const recent = [...borrowingLog]
+                .sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate))
+                .slice(0, 5);
+            
+            let html = '<div class="list-group list-group-flush">';
+            
+            recent.forEach(entry => {
+                const date = new Date(entry.borrowDate);
+                const statusClass = entry.status === 'returned' ? 'success' : 
+                                   entry.status === 'overdue' ? 'danger' : 'warning';
+                
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">${entry.borrowerName}</div>
+                            <small class="text-muted">Borrowed: ${entry.items.join(', ')}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-${statusClass}">${entry.status}</span>
+                            <div><small class="text-muted">${date.toLocaleDateString()}</small></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            recentActivity.innerHTML = html;
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+            
+            if (Object.keys(items).length === 0) {
+                itemsList.innerHTML = '<p class="text-muted">No items found. Add your first item!</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            Object.entries(items).forEach(([id, item]) => {
+                const quantity = inventory[id] || 0;
+                let quantityClass = 'quantity-high';
+                
+                if (quantity <= 3) {
+                    quantityClass = 'quantity-low';
+                } else if (quantity <= 6) {
+                    quantityClass = 'quantity-medium';
+                }
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-info">
+                                <div class="item-icon">
+                                    <i class="bi ${item.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-quantity">
+                                        <span>Available:</span>
+                                        <span class="quantity-badge ${quantityClass}">${quantity}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn-icon edit" onclick="editItem('${id}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn-icon delete" onclick="deleteItem('${id}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            itemsList.innerHTML = html;
+        }
+
+        function renderInventory() {
+            const inventoryList = document.getElementById('inventoryList');
+            
+            if (Object.keys(items).length === 0) {
+                inventoryList.innerHTML = '<p class="text-muted">No items in inventory</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            Object.entries(items).forEach(([id, item]) => {
+                const quantity = inventory[id] || 0;
+                let quantityClass = 'quantity-high';
+                
+                if (quantity <= 3) {
+                    quantityClass = 'quantity-low';
+                } else if (quantity <= 6) {
+                    quantityClass = 'quantity-medium';
+                }
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-info">
+                                <div class="item-icon">
+                                    <i class="bi ${item.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-quantity">
+                                        <span>Current Stock:</span>
+                                        <span class="quantity-badge ${quantityClass}">${quantity}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-outline-danger me-2" onclick="updateInventoryQuantity('${id}', -1)">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <span class="fw-bold mx-2">${quantity}</span>
+                                <button class="btn btn-sm btn-outline-success ms-2" onclick="updateInventoryQuantity('${id}', 1)">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            inventoryList.innerHTML = html;
+        }
+
+        function updateInventoryQuantity(itemId, change) {
+            const newQuantity = Math.max(0, (inventory[itemId] || 0) + change);
+            
+            inventoryRef.child(itemId).set(newQuantity)
+                .then(() => {
+                    showToast('success', 'Inventory Updated', `${items[itemId].name} quantity updated to ${newQuantity}.`);
+                })
+                .catch((error) => {
+                    console.error("Error updating inventory:", error);
+                    showToast('error', 'Update Error', 'Failed to update inventory. Please try again.');
+                });
+        }
+
+        function addNewItem() {
+            const name = document.getElementById('itemName').value;
+            const icon = document.getElementById('itemIcon').value;
+            const quantity = parseInt(document.getElementById('itemQuantity').value);
+            
+            if (!name || !icon) {
+                showToast('error', 'Validation Error', 'Please fill in all fields.');
+                return;
+            }
+            
+            // Generate ID from name (lowercase, no spaces)
+            const id = name.toLowerCase().replace(/\s+/g, '');
+            
+            // Check if item already exists
+            if (items[id]) {
+                showToast('error', 'Duplicate Item', 'An item with this name already exists.');
+                return;
+            }
+            
+            // Add item to Firebase
+            const updates = {};
+            updates[`items/${id}`] = { name, icon };
+            updates[`inventory/${id}`] = quantity;
+            
+            database.ref().update(updates)
+                .then(() => {
+                    // Close modal and reset form
+                    bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
+                    document.getElementById('addItemForm').reset();
+                    
+                    showToast('success', 'Item Added', `${name} has been added successfully.`);
+                })
+                .catch((error) => {
+                    console.error("Error adding item:", error);
+                    showToast('error', 'Add Error', 'Failed to add item. Please try again.');
+                });
+        }
+
+        function editItem(itemId) {
+            const item = items[itemId];
+            if (!item) return;
+            
+            document.getElementById('editItemId').value = itemId;
+            document.getElementById('editItemName').value = item.name;
+            document.getElementById('editItemIcon').value = item.icon;
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('editItemModal')).show();
+        }
+
+        function updateItem() {
+            const itemId = document.getElementById('editItemId').value;
+            const name = document.getElementById('editItemName').value;
+            const icon = document.getElementById('editItemIcon').value;
+            
+            if (!name || !icon) {
+                showToast('error', 'Validation Error', 'Please fill in all fields.');
+                return;
+            }
+            
+            // Update item in Firebase
+            itemsRef.child(itemId).set({ name, icon })
+                .then(() => {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
+                    
+                    showToast('success', 'Item Updated', `${name} has been updated successfully.`);
+                })
+                .catch((error) => {
+                    console.error("Error updating item:", error);
+                    showToast('error', 'Update Error', 'Failed to update item. Please try again.');
+                });
+        }
+
+        function deleteItem(itemId) {
+            const item = items[itemId];
+            if (!item) return;
+            
+            if (confirm(`Are you sure you want to delete "${item.name}"? This will also remove all inventory data for this item.`)) {
+                // Delete item and inventory from Firebase
+                const updates = {};
+                updates[`items/${itemId}`] = null;
+                updates[`inventory/${itemId}`] = null;
+                
+                database.ref().update(updates)
+                    .then(() => {
+                        showToast('success', 'Item Deleted', `${item.name} has been deleted successfully.`);
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting item:", error);
+                        showToast('error', 'Delete Error', 'Failed to delete item. Please try again.');
+                    });
+            }
+        }
+
+        function updateRecordsTable() {
+            const tableBody = document.getElementById('recordsTableBody');
+            const searchTerm = document.getElementById('recordsSearch').value.toLowerCase();
+            
+            // Filter records
+            let filteredRecords = borrowingLog.filter(entry => {
+                return entry.borrowerName.toLowerCase().includes(searchTerm) || 
+                       entry.purpose.toLowerCase().includes(searchTerm);
             });
             
             // Check for overdue items
             const now = new Date();
-            filteredLog = filteredLog.map(entry => {
+            filteredRecords = filteredRecords.map(entry => {
                 if (entry.status === 'pending' && new Date(entry.returnDate) < now) {
                     return { ...entry, status: 'overdue' };
                 }
                 return entry;
             });
             
-            // Clear table
-            logTableBody.innerHTML = '';
+            // Sort by date (newest first)
+            filteredRecords.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
             
-            if (filteredLog.length === 0) {
-                emptyState.style.display = 'block';
+            if (filteredRecords.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No records found</td></tr>';
                 return;
             }
             
-            emptyState.style.display = 'none';
+            let html = '';
             
-            // Sort by date (newest first)
-            filteredLog.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
-            
-            // Add rows to table
-            filteredLog.forEach(entry => {
-                const row = document.createElement('tr');
-                
-                // Format dates
+            filteredRecords.forEach(entry => {
                 const borrowDate = new Date(entry.borrowDate);
                 const returnDate = new Date(entry.returnDate);
                 const actualReturnDate = entry.actualReturnDate ? new Date(entry.actualReturnDate) : null;
@@ -689,64 +1868,73 @@
                                     </button>`;
                 } else {
                     actionButton = `<span class="text-muted">
-                                        Returned on ${actualReturnDate.toLocaleDateString()} ${actualReturnDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        Returned on ${actualReturnDate.toLocaleDateString()}
                                     </span>`;
                 }
                 
-                // Create items list
-                const itemsList = entry.items.join(', ');
-                
-                row.innerHTML = `
-                    <td>${entry.borrowerName}</td>
-                    <td>${itemsList}</td>
-                    <td>${entry.purpose}</td>
-                    <td>${borrowDate.toLocaleDateString()} ${borrowDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                    <td>${returnDate.toLocaleDateString()} ${returnDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                    <td>${statusBadge}</td>
-                    <td>${actionButton}</td>
+                html += `
+                    <tr>
+                        <td>${entry.id}</td>
+                        <td>${entry.borrowerName}</td>
+                        <td>${entry.items.join(', ')}</td>
+                        <td>${entry.purpose}</td>
+                        <td>${borrowDate.toLocaleDateString()}</td>
+                        <td>${returnDate.toLocaleDateString()}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actionButton}</td>
+                    </tr>
                 `;
-                
-                logTableBody.appendChild(row);
             });
+            
+            tableBody.innerHTML = html;
         }
 
-        // Mark item as returned
         function markAsReturned(id) {
-            if (!borrowingLogRef) {
-                showToast('error', 'Not Connected', 'Please wait for Firebase to initialize.');
-                return;
-            }
+            const entry = borrowingLog.find(e => e.id === id);
+            if (!entry) return;
             
-            const entryIndex = borrowingLog.findIndex(entry => entry.id === id);
+            // Update log entry
+            const updates = {};
+            updates[`borrowingLog/${id}/status`] = 'returned';
+            updates[`borrowingLog/${id}/actualReturnDate`] = new Date().toISOString();
             
-            if (entryIndex !== -1) {
-                const updates = {};
-                updates[id + '/status'] = 'returned';
-                updates[id + '/actualReturnDate'] = new Date().toISOString();
+            // Update inventory quantities
+            entry.items.forEach(item => {
+                // Find the corresponding inventory item ID
+                const itemId = Object.keys(items).find(key => {
+                    return items[key].name.toLowerCase() === item.toLowerCase();
+                });
                 
-                borrowingLogRef.update(updates)
-                    .then(() => {
-                        showToast('success', 'Item Returned', 'The stationery has been marked as returned.');
-                    })
-                    .catch((error) => {
-                        console.error("Error updating document: ", error);
-                        showToast('error', 'Update Error', 'Failed to update the return status. Please try again.');
-                    });
-            }
-        }
-
-        // Update statistics
-        function updateStats() {
-            const totalBorrowed = borrowingLog.length;
-            const pendingReturns = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue').length;
+                if (itemId && inventory[itemId] !== undefined) {
+                    updates[`inventory/${itemId}`] = (inventory[itemId] || 0) + 1;
+                }
+            });
             
-            document.getElementById('totalBorrowed').textContent = totalBorrowed;
-            document.getElementById('pendingReturns').textContent = pendingReturns;
+            // Update both log and inventory
+            database.ref().update(updates)
+                .then(() => {
+                    showToast('success', 'Item Returned', 'The stationery has been marked as returned and inventory updated.');
+                })
+                .catch((error) => {
+                    console.error("Error updating:", error);
+                    showToast('error', 'Update Error', 'Failed to update the return status or inventory. Please try again.');
+                });
         }
 
         // Search functionality
-        document.getElementById('searchInput').addEventListener('input', renderLog);
-        document.getElementById('statusFilter').addEventListener('change', renderLog);
+        document.getElementById('recordsSearch').addEventListener('input', updateRecordsTable);
+
+        // Update connection status
+        function updateConnectionStatus(isConnected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusElement.className = 'connection-status connected';
+                statusElement.innerHTML = '<i class="bi bi-wifi"></i><span>Connected to Firebase</span>';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '<i class="bi bi-wifi-off"></i><span>Disconnected</span>';
+            }
+        }
 
         // Show toast notification
         function showToast(type, title, message) {
@@ -777,6 +1965,12 @@
                 toast.remove();
             }, 5000);
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Firebase when page loads
+            initializeFirebase();
+        });
     </script>
 </body>
 </html>
