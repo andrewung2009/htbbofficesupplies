@@ -1,9 +1,12 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stationery Management System</title>
+    <link rel="icon" type="image/jpg" href="htbblogo.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Firebase SDK -->
@@ -887,6 +890,53 @@
             font-size: 1.1rem;
         }
 
+        /* Status Section Styles */
+        .status-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .status-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .status-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .status-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .status-tab .badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            min-width: 20px;
+        }
+
+        .status-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-content.active {
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .landing-title {
@@ -1095,6 +1145,9 @@
                             <a class="nav-link" href="#" onclick="showAdminSection('inventory')">
                                 <i class="bi bi-box"></i>Inventory Management
                             </a>
+                            <a class="nav-link" href="#" onclick="showAdminSection('status')">
+                                <i class="bi bi-list-check"></i>Item Status
+                            </a>
                             <a class="nav-link" href="#" onclick="showAdminSection('records')">
                                 <i class="bi bi-clock-history"></i>All Records
                             </a>
@@ -1158,7 +1211,7 @@
                         </div>
                     </div>
 
-                    <!-- Inventory Management Section (Merged Items and Inventory) -->
+                    <!-- Inventory Management Section -->
                     <div id="adminInventory" class="content-section">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h2>Inventory Management</h2>
@@ -1174,20 +1227,82 @@
                                 <button class="filter-btn active" onclick="filterItems('all')">
                                     <i class="bi bi-grid-3x3-gap me-1"></i>All Items
                                 </button>
-                                <button class="filter-btn low-stock" onclick="filterItems('low')">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>Low Stock (≤3)
+                                <button class="filter-btn high-stock" onclick="filterItems('high')">
+                                    <i class="bi bi-check-circle me-1"></i>High Stock (>6)
                                 </button>
                                 <button class="filter-btn medium-stock" onclick="filterItems('medium')">
                                     <i class="bi bi-dash-circle me-1"></i>Medium Stock (4-6)
                                 </button>
-                                <button class="filter-btn high-stock" onclick="filterItems('high')">
-                                    <i class="bi bi-check-circle me-1"></i>High Stock (>6)
+                                <button class="filter-btn low-stock" onclick="filterItems('low')">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Low Stock (≤3)
                                 </button>
                             </div>
                         </div>
 
                         <div id="inventoryList">
                             <p class="text-muted">Loading inventory...</p>
+                        </div>
+                    </div>
+
+                    <!-- Item Status Section -->
+                    <div id="adminStatus" class="content-section">
+                        <h2 class="mb-4">Item Status Overview</h2>
+                        
+                        <div class="status-tabs">
+                            <button class="status-tab active" onclick="showStatusTab('pending')">
+                                Pending
+                                <span class="badge bg-warning" id="pendingCount">0</span>
+                            </button>
+                            <button class="status-tab" onclick="showStatusTab('overdue')">
+                                Overdue
+                                <span class="badge bg-danger" id="overdueCount">0</span>
+                            </button>
+                            <button class="status-tab" onclick="showStatusTab('returned')">
+                                Returned
+                                <span class="badge bg-success" id="returnedCount">0</span>
+                            </button>
+                        </div>
+
+                        <!-- Pending Items -->
+                        <div id="pendingItems" class="status-content active">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="bi bi-clock me-2"></i>Pending Returns
+                                </div>
+                                <div class="card-body">
+                                    <div id="pendingItemsList">
+                                        <p class="text-muted">Loading pending items...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overdue Items -->
+                        <div id="overdueItems" class="status-content">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>Overdue Items
+                                </div>
+                                <div class="card-body">
+                                    <div id="overdueItemsList">
+                                        <p class="text-muted">Loading overdue items...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Returned Items -->
+                        <div id="returnedItems" class="status-content">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="bi bi-check-circle me-2"></i>Recently Returned
+                                </div>
+                                <div class="card-body">
+                                    <div id="returnedItemsList">
+                                        <p class="text-muted">Loading returned items...</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1425,6 +1540,8 @@
                 updateRecordsTable();
                 updateRecentActivity();
                 updateRecentBorrowingTable();
+                updateStatusCounts();
+                updateStatusLists();
             });
 
             // Listen for inventory changes
@@ -2217,6 +2334,148 @@
             });
             
             tableBody.innerHTML = html;
+        }
+
+        // Status section functions
+        function showStatusTab(status) {
+            // Hide all status content
+            document.querySelectorAll('.status-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.status-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById(status + 'Items').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function updateStatusCounts() {
+            const now = new Date();
+            let pendingCount = 0;
+            let overdueCount = 0;
+            let returnedCount = 0;
+            
+            borrowingLog.forEach(entry => {
+                if (entry.status === 'returned') {
+                    returnedCount++;
+                } else if (entry.status === 'overdue' || (entry.status === 'pending' && new Date(entry.returnDate) < now)) {
+                    overdueCount++;
+                } else {
+                    pendingCount++;
+                }
+            });
+            
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('overdueCount').textContent = overdueCount;
+            document.getElementById('returnedCount').textContent = returnedCount;
+        }
+
+        function updateStatusLists() {
+            const now = new Date();
+            
+            // Update pending items
+            const pendingList = document.getElementById('pendingItemsList');
+            const pendingItems = borrowingLog.filter(entry => {
+                return entry.status === 'pending' && new Date(entry.returnDate) >= now;
+            }).sort((a, b) => new Date(a.returnDate) - new Date(b.returnDate));
+            
+            if (pendingItems.length === 0) {
+                pendingList.innerHTML = '<p class="text-muted">No pending items</p>';
+            } else {
+                let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Action</th></tr></thead><tbody>';
+                pendingItems.forEach(entry => {
+                    const returnDate = new Date(entry.returnDate);
+                    const itemsText = entry.items.map(item => 
+                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                    ).join(', ');
+                    
+                    html += `
+                        <tr>
+                            <td>${entry.borrowerName}</td>
+                            <td>${itemsText}</td>
+                            <td>${returnDate.toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
+                                    <i class="bi bi-check-circle me-1"></i>Mark as Return
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table></div>';
+                pendingList.innerHTML = html;
+            }
+            
+            // Update overdue items
+            const overdueList = document.getElementById('overdueItemsList');
+            const overdueItems = borrowingLog.filter(entry => {
+                return entry.status === 'overdue' || (entry.status === 'pending' && new Date(entry.returnDate) < now);
+            }).sort((a, b) => new Date(a.returnDate) - new Date(b.returnDate));
+            
+            if (overdueItems.length === 0) {
+                overdueList.innerHTML = '<p class="text-muted">No overdue items</p>';
+            } else {
+                let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr></thead><tbody>';
+                overdueItems.forEach(entry => {
+                    const returnDate = new Date(entry.returnDate);
+                    const daysOverdue = Math.floor((now - returnDate) / (1000 * 60 * 60 * 24));
+                    const itemsText = entry.items.map(item => 
+                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                    ).join(', ');
+                    
+                    html += `
+                        <tr>
+                            <td>${entry.borrowerName}</td>
+                            <td>${itemsText}</td>
+                            <td>${returnDate.toLocaleDateString()}</td>
+                            <td><span class="badge bg-danger">${daysOverdue} days</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
+                                    <i class="bi bi-check-circle me-1"></i>Mark as Return
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table></div>';
+                overdueList.innerHTML = html;
+            }
+            
+            // Update returned items
+            const returnedList = document.getElementById('returnedItemsList');
+            const returnedItems = borrowingLog.filter(entry => entry.status === 'returned')
+                .sort((a, b) => new Date(b.actualReturnDate) - new Date(a.actualReturnDate))
+                .slice(0, 10); // Show last 10 returned items
+            
+            if (returnedItems.length === 0) {
+                returnedList.innerHTML = '<p class="text-muted">No returned items</p>';
+            } else {
+                let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Return Date</th></tr></thead><tbody>';
+                returnedItems.forEach(entry => {
+                    const borrowDate = new Date(entry.borrowDate);
+                    const actualReturnDate = new Date(entry.actualReturnDate);
+                    const itemsText = entry.items.map(item => 
+                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                    ).join(', ');
+                    
+                    html += `
+                        <tr>
+                            <td>${entry.borrowerName}</td>
+                            <td>${itemsText}</td>
+                            <td>${borrowDate.toLocaleDateString()}</td>
+                            <td>${actualReturnDate.toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table></div>';
+                returnedList.innerHTML = html;
+            }
         }
 
         function markAsReturned(id) {
