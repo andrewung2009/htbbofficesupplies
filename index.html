@@ -298,24 +298,19 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .stationery-item input[type="checkbox"] {
-            margin-right: 1rem;
-            width: 1.25rem;
-            height: 1.25rem;
-            cursor: pointer;
-        }
-
-        .stationery-item label {
-            margin: 0;
-            cursor: pointer;
-            flex-grow: 1;
-            font-weight: 500;
-        }
-
         .stationery-icon {
             margin-right: 1rem;
             color: var(--primary-color);
             font-size: 1.5rem;
+        }
+
+        .stationery-details {
+            flex-grow: 1;
+        }
+
+        .stationery-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
         }
 
         .stationery-quantity {
@@ -349,6 +344,45 @@
 
         .quantity-high {
             background-color: var(--success-color);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.25rem;
         }
 
         /* Admin Dashboard Styles */
@@ -750,6 +784,109 @@
             margin-right: auto;
         }
 
+        /* Filter Section Styles */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: var(--dark-text);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn.low-stock {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .filter-btn.low-stock.active {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .filter-btn.medium-stock {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .filter-btn.medium-stock.active {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .filter-btn.high-stock {
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .filter-btn.high-stock.active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        /* Summary Card Styles */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-top: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .landing-title {
@@ -777,6 +914,17 @@
 
             .table th, .table td {
                 padding: 0.5rem;
+            }
+
+            .stationery-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .quantity-selector {
+                margin-top: 0.5rem;
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -869,6 +1017,16 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Summary Card -->
+                                <div class="summary-card" id="summaryCard" style="display: none;">
+                                    <div class="summary-title">
+                                        <i class="bi bi-cart-check me-2"></i>Order Summary
+                                    </div>
+                                    <div id="summaryItems">
+                                        <!-- Summary items will be loaded dynamically -->
+                                    </div>
+                                </div>
+                                
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-check-circle me-2"></i>Submit Request
                                 </button>
@@ -934,11 +1092,8 @@
                             <a class="nav-link active" href="#" onclick="showAdminSection('dashboard')">
                                 <i class="bi bi-speedometer2"></i>Dashboard
                             </a>
-                            <a class="nav-link" href="#" onclick="showAdminSection('items')">
-                                <i class="bi bi-box"></i>Manage Items
-                            </a>
                             <a class="nav-link" href="#" onclick="showAdminSection('inventory')">
-                                <i class="bi bi-stack"></i>Inventory
+                                <i class="bi bi-box"></i>Inventory Management
                             </a>
                             <a class="nav-link" href="#" onclick="showAdminSection('records')">
                                 <i class="bi bi-clock-history"></i>All Records
@@ -1003,23 +1158,34 @@
                         </div>
                     </div>
 
-                    <!-- Items Section -->
-                    <div id="adminItems" class="content-section">
+                    <!-- Inventory Management Section (Merged Items and Inventory) -->
+                    <div id="adminInventory" class="content-section">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2>Manage Stationery Items</h2>
+                            <h2>Inventory Management</h2>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                                 <i class="bi bi-plus-circle me-2"></i>Add New Item
                             </button>
                         </div>
 
-                        <div id="itemsList">
-                            <p class="text-muted">Loading items...</p>
+                        <!-- Filter Section -->
+                        <div class="filter-section">
+                            <div class="filter-title">Filter by Stock Level</div>
+                            <div class="filter-buttons">
+                                <button class="filter-btn active" onclick="filterItems('all')">
+                                    <i class="bi bi-grid-3x3-gap me-1"></i>All Items
+                                </button>
+                                <button class="filter-btn low-stock" onclick="filterItems('low')">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Low Stock (≤3)
+                                </button>
+                                <button class="filter-btn medium-stock" onclick="filterItems('medium')">
+                                    <i class="bi bi-dash-circle me-1"></i>Medium Stock (4-6)
+                                </button>
+                                <button class="filter-btn high-stock" onclick="filterItems('high')">
+                                    <i class="bi bi-check-circle me-1"></i>High Stock (>6)
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Inventory Section -->
-                    <div id="adminInventory" class="content-section">
-                        <h2 class="mb-4">Inventory Management</h2>
                         <div id="inventoryList">
                             <p class="text-muted">Loading inventory...</p>
                         </div>
@@ -1208,6 +1374,8 @@
         let nextId = 1;
         let inventory = {};
         let items = {};
+        let currentFilter = 'all';
+        let selectedQuantities = {};
 
         // Admin password updated to "htbb"
         const ADMIN_PASSWORD = "htbb";
@@ -1285,7 +1453,6 @@
                 }
                 
                 updateDashboardStats();
-                renderItems();
                 renderInventory();
                 renderStationeryItems();
                 updateStationeryQuantities();
@@ -1302,6 +1469,8 @@
             hideAllSections();
             document.getElementById('borrowingSection').classList.add('active');
             setDefaultDates();
+            selectedQuantities = {};
+            updateSummary();
         }
 
         function showAdminLogin() {
@@ -1384,35 +1553,40 @@
             const borrowDate = document.getElementById('borrowDate').value;
             const returnDate = document.getElementById('returnDate').value;
             
-            // Get selected stationery items
+            // Get selected stationery items with quantities
             const selectedItems = [];
-            const checkboxes = document.querySelectorAll('input[name="stationery"]:checked');
-            
-            if (checkboxes.length === 0) {
-                showToast('error', 'No Items Selected', 'Please select at least one stationery item.');
-                return;
-            }
-            
-            // Check if selected items are available
             let itemsAvailable = true;
             let unavailableItems = [];
             let selectedItemIds = [];
             
-            checkboxes.forEach(checkbox => {
-                const itemId = checkbox.id;
-                const quantity = inventory[itemId] || 0;
-                
-                if (quantity <= 0) {
-                    itemsAvailable = false;
-                    unavailableItems.push(checkbox.value);
-                } else {
-                    selectedItems.push(checkbox.value);
-                    selectedItemIds.push(itemId);
+            Object.entries(selectedQuantities).forEach(([itemId, quantity]) => {
+                if (quantity > 0) {
+                    const item = items[itemId];
+                    const availableQuantity = inventory[itemId] || 0;
+                    
+                    if (availableQuantity < quantity) {
+                        itemsAvailable = false;
+                        unavailableItems.push(`${item.name} (requested: ${quantity}, available: ${availableQuantity})`);
+                    } else {
+                        selectedItems.push({
+                            name: item.name,
+                            quantity: quantity
+                        });
+                        selectedItemIds.push({
+                            id: itemId,
+                            quantity: quantity
+                        });
+                    }
                 }
             });
             
+            if (selectedItems.length === 0) {
+                showToast('error', 'No Items Selected', 'Please select at least one stationery item with quantity.');
+                return;
+            }
+            
             if (!itemsAvailable) {
-                showToast('error', 'Items Unavailable', `The following items are out of stock: ${unavailableItems.join(', ')}`);
+                showToast('error', 'Insufficient Stock', `The following items don't have enough stock: ${unavailableItems.join(', ')}`);
                 return;
             }
             
@@ -1432,8 +1606,8 @@
                 .then(() => {
                     // Update inventory quantities
                     const inventoryUpdates = {};
-                    selectedItemIds.forEach(itemId => {
-                        inventoryUpdates[itemId] = (inventory[itemId] || 0) - 1;
+                    selectedItemIds.forEach(({ id, quantity }) => {
+                        inventoryUpdates[id] = (inventory[id] || 0) - quantity;
                     });
                     
                     inventoryRef.update(inventoryUpdates)
@@ -1441,6 +1615,8 @@
                             // Reset form
                             this.reset();
                             setDefaultDates();
+                            selectedQuantities = {};
+                            updateSummary();
                             
                             // Show success message
                             showToast('success', 'Request Submitted', 'Your borrowing request has been recorded successfully.');
@@ -1486,15 +1662,27 @@
                     quantityClass = 'quantity-medium';
                 }
                 
+                const selectedQuantity = selectedQuantities[id] || 0;
+                
                 const stationeryItem = document.createElement('div');
                 stationeryItem.className = 'stationery-item';
                 stationeryItem.innerHTML = `
                     <i class="bi ${item.icon} stationery-icon"></i>
-                    <input type="checkbox" id="${id}" name="stationery" value="${item.name}" ${quantity <= 0 ? 'disabled' : ''}>
-                    <label for="${id}">${item.name}</label>
-                    <div class="stationery-quantity">
-                        <span>Available:</span>
-                        <span class="quantity-badge ${quantityClass}" id="${id}-quantity">${quantity}</span>
+                    <div class="stationery-details">
+                        <div class="stationery-name">${item.name}</div>
+                        <div class="stationery-quantity">
+                            <span>Available:</span>
+                            <span class="quantity-badge ${quantityClass}" id="${id}-available">${quantity}</span>
+                        </div>
+                    </div>
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity('${id}')" ${selectedQuantity <= 0 ? 'disabled' : ''}>
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" class="quantity-input" id="${id}-quantity" value="${selectedQuantity}" min="0" max="${quantity}" readonly>
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity('${id}')" ${selectedQuantity >= quantity ? 'disabled' : ''}>
+                            <i class="bi bi-plus"></i>
+                        </button>
                     </div>
                 `;
                 
@@ -1502,12 +1690,96 @@
             });
         }
 
+        // Increase quantity for an item
+        function increaseQuantity(itemId) {
+            const available = inventory[itemId] || 0;
+            const current = selectedQuantities[itemId] || 0;
+            
+            if (current < available) {
+                selectedQuantities[itemId] = current + 1;
+                document.getElementById(`${itemId}-quantity`).value = selectedQuantities[itemId];
+                
+                // Update button states
+                const decreaseBtn = document.querySelector(`button[onclick="decreaseQuantity('${itemId}')"]`);
+                const increaseBtn = document.querySelector(`button[onclick="increaseQuantity('${itemId}')"]`);
+                
+                decreaseBtn.disabled = false;
+                if (selectedQuantities[itemId] >= available) {
+                    increaseBtn.disabled = true;
+                }
+                
+                updateSummary();
+            }
+        }
+
+        // Decrease quantity for an item
+        function decreaseQuantity(itemId) {
+            const current = selectedQuantities[itemId] || 0;
+            
+            if (current > 0) {
+                selectedQuantities[itemId] = current - 1;
+                document.getElementById(`${itemId}-quantity`).value = selectedQuantities[itemId];
+                
+                // Update button states
+                const decreaseBtn = document.querySelector(`button[onclick="decreaseQuantity('${itemId}')"]`);
+                const increaseBtn = document.querySelector(`button[onclick="increaseQuantity('${itemId}')"]`);
+                const available = inventory[itemId] || 0;
+                
+                increaseBtn.disabled = false;
+                if (selectedQuantities[itemId] <= 0) {
+                    decreaseBtn.disabled = true;
+                }
+                
+                updateSummary();
+            }
+        }
+
+        // Update order summary
+        function updateSummary() {
+            const summaryCard = document.getElementById('summaryCard');
+            const summaryItems = document.getElementById('summaryItems');
+            
+            // Calculate total items and total unique items
+            const selectedItems = Object.entries(selectedQuantities).filter(([id, qty]) => qty > 0);
+            
+            if (selectedItems.length === 0) {
+                summaryCard.style.display = 'none';
+                return;
+            }
+            
+            summaryCard.style.display = 'block';
+            
+            let html = '';
+            let totalItems = 0;
+            
+            selectedItems.forEach(([id, quantity]) => {
+                const item = items[id];
+                html += `
+                    <div class="summary-item">
+                        <span>${item.name}</span>
+                        <span>${quantity} unit${quantity > 1 ? 's' : ''}</span>
+                    </div>
+                `;
+                totalItems += quantity;
+            });
+            
+            html += `
+                <div class="summary-item">
+                    <span>Total Items</span>
+                    <span>${totalItems}</span>
+                </div>
+            `;
+            
+            summaryItems.innerHTML = html;
+        }
+
         // Update stationery quantities
         function updateStationeryQuantities() {
             Object.entries(items).forEach(([id, item]) => {
                 const quantity = inventory[id] || 0;
-                const badge = document.getElementById(`${id}-quantity`);
-                const checkbox = document.getElementById(id);
+                const badge = document.getElementById(`${id}-available`);
+                const input = document.getElementById(`${id}-quantity`);
+                const selectedQuantity = selectedQuantities[id] || 0;
                 
                 if (badge) {
                     badge.textContent = quantity;
@@ -1522,15 +1794,27 @@
                     }
                 }
                 
-                if (checkbox) {
-                    if (quantity <= 0) {
-                        checkbox.disabled = true;
-                        checkbox.checked = false;
-                    } else {
-                        checkbox.disabled = false;
+                if (input) {
+                    // Adjust selected quantity if it exceeds available stock
+                    if (selectedQuantity > quantity) {
+                        selectedQuantities[id] = quantity;
+                        input.value = quantity;
+                    }
+                    
+                    // Update button states
+                    const decreaseBtn = document.querySelector(`button[onclick="decreaseQuantity('${id}')"]`);
+                    const increaseBtn = document.querySelector(`button[onclick="increaseQuantity('${id}')"]`);
+                    
+                    if (decreaseBtn) {
+                        decreaseBtn.disabled = selectedQuantity <= 0;
+                    }
+                    if (increaseBtn) {
+                        increaseBtn.disabled = selectedQuantity >= quantity;
                     }
                 }
             });
+            
+            updateSummary();
         }
 
         // Update recent borrowing table
@@ -1552,16 +1836,21 @@
                 const statusClass = entry.status === 'returned' ? 'badge-returned' : 
                                    entry.status === 'overdue' ? 'badge-overdue' : 'badge-pending';
                 
+                // Format items with quantities
+                const itemsText = entry.items.map(item => 
+                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                ).join(', ');
+                
                 const actionButton = entry.status !== 'returned' ? 
                     `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                        <i class="bi bi-check-circle me-1"></i>Return
+                        <i class="bi bi-check-circle me-1"></i>Mark as Return
                     </button>` : 
                     '<span class="text-muted">Returned</span>';
                 
                 html += `
                     <tr>
                         <td>${entry.borrowerName}</td>
-                        <td>${entry.items.join(', ')}</td>
+                        <td>${itemsText}</td>
                         <td><span class="badge ${statusClass}">${entry.status}</span></td>
                         <td>${actionButton}</td>
                     </tr>
@@ -1604,11 +1893,16 @@
                 const statusClass = entry.status === 'returned' ? 'success' : 
                                    entry.status === 'overdue' ? 'danger' : 'warning';
                 
+                // Format items with quantities
+                const itemsText = entry.items.map(item => 
+                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                ).join(', ');
+                
                 html += `
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fw-semibold">${entry.borrowerName}</div>
-                            <small class="text-muted">Borrowed: ${entry.items.join(', ')}</small>
+                            <small class="text-muted">Borrowed: ${itemsText}</small>
                         </div>
                         <div class="text-end">
                             <span class="badge bg-${statusClass}">${entry.status}</span>
@@ -1620,70 +1914,6 @@
             
             html += '</div>';
             recentActivity.innerHTML = html;
-        }
-
-        function renderItems() {
-            const itemsList = document.getElementById('itemsList');
-            
-            if (Object.keys(items).length === 0) {
-                itemsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="bi bi-box"></i>
-                        </div>
-                        <div class="empty-state-title">No Items Yet</div>
-                        <div class="empty-state-description">
-                            Start by adding your first stationery item to the system.
-                        </div>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-                            <i class="bi bi-plus-circle me-2"></i>Add Your First Item
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            
-            Object.entries(items).forEach(([id, item]) => {
-                const quantity = inventory[id] || 0;
-                let quantityClass = 'quantity-high';
-                
-                if (quantity <= 3) {
-                    quantityClass = 'quantity-low';
-                } else if (quantity <= 6) {
-                    quantityClass = 'quantity-medium';
-                }
-                
-                html += `
-                    <div class="item-card">
-                        <div class="item-header">
-                            <div class="item-info">
-                                <div class="item-icon">
-                                    <i class="bi ${item.icon}"></i>
-                                </div>
-                                <div>
-                                    <div class="item-name">${item.name}</div>
-                                    <div class="item-quantity">
-                                        <span>Available:</span>
-                                        <span class="quantity-badge ${quantityClass}">${quantity}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="btn-icon edit" onclick="editItem('${id}')">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn-icon delete" onclick="deleteItem('${id}')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            itemsList.innerHTML = html;
         }
 
         function renderInventory() {
@@ -1707,9 +1937,38 @@
                 return;
             }
             
+            // Filter items based on current filter
+            let filteredItems = Object.entries(items);
+            
+            if (currentFilter === 'low') {
+                filteredItems = filteredItems.filter(([id]) => (inventory[id] || 0) <= 3);
+            } else if (currentFilter === 'medium') {
+                filteredItems = filteredItems.filter(([id]) => {
+                    const qty = inventory[id] || 0;
+                    return qty >= 4 && qty <= 6;
+                });
+            } else if (currentFilter === 'high') {
+                filteredItems = filteredItems.filter(([id]) => (inventory[id] || 0) > 6);
+            }
+            
+            if (filteredItems.length === 0) {
+                inventoryList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-funnel"></i>
+                        </div>
+                        <div class="empty-state-title">No Items Found</div>
+                        <div class="empty-state-description">
+                            No items match the current filter. Try a different filter or add new items.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
             let html = '';
             
-            Object.entries(items).forEach(([id, item]) => {
+            filteredItems.forEach(([id, item]) => {
                 const quantity = inventory[id] || 0;
                 let quantityClass = 'quantity-high';
                 
@@ -1742,6 +2001,14 @@
                                 <button class="btn btn-sm btn-outline-success ms-2" onclick="updateInventoryQuantity('${id}', 1)">
                                     <i class="bi bi-plus"></i>
                                 </button>
+                                <div class="item-actions ms-3">
+                                    <button class="btn-icon edit" onclick="editItem('${id}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="deleteItem('${id}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1749,6 +2016,21 @@
             });
             
             inventoryList.innerHTML = html;
+        }
+
+        // Filter items function
+        function filterItems(filter) {
+            currentFilter = filter;
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Re-render inventory with filter
+            renderInventory();
         }
 
         function updateInventoryQuantity(itemId, change) {
@@ -1903,11 +2185,16 @@
                     statusBadge = '<span class="badge badge-pending">Pending</span>';
                 }
                 
+                // Format items with quantities
+                const itemsText = entry.items.map(item => 
+                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
+                ).join(', ');
+                
                 // Create action button
                 let actionButton = '';
                 if (entry.status !== 'returned') {
                     actionButton = `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                                        <i class="bi bi-check-circle me-1"></i>Mark Returned
+                                        <i class="bi bi-check-circle me-1"></i>Mark as Return
                                     </button>`;
                 } else {
                     actionButton = `<span class="text-muted">
@@ -1919,7 +2206,7 @@
                     <tr>
                         <td>${entry.id}</td>
                         <td>${entry.borrowerName}</td>
-                        <td>${entry.items.join(', ')}</td>
+                        <td>${itemsText}</td>
                         <td>${entry.purpose}</td>
                         <td>${borrowDate.toLocaleDateString()}</td>
                         <td>${returnDate.toLocaleDateString()}</td>
@@ -1945,11 +2232,11 @@
             entry.items.forEach(item => {
                 // Find the corresponding inventory item ID
                 const itemId = Object.keys(items).find(key => {
-                    return items[key].name.toLowerCase() === item.toLowerCase();
+                    return items[key].name.toLowerCase() === item.name.toLowerCase();
                 });
                 
                 if (itemId && inventory[itemId] !== undefined) {
-                    updates[`inventory/${itemId}`] = (inventory[itemId] || 0) + 1;
+                    updates[`inventory/${itemId}`] = (inventory[itemId] || 0) + item.quantity;
                 }
             });
             
