@@ -723,6 +723,33 @@
             margin-right: 0.5rem;
         }
 
+        /* Empty State Styles */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+
+        .empty-state-description {
+            margin-bottom: 1.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .landing-title {
@@ -1252,8 +1279,9 @@
                 if (data) {
                     items = data;
                 } else {
-                    // Initialize with default items if none exist
-                    initializeDefaultItems();
+                    // Initialize with empty items if none exist
+                    items = {};
+                    itemsRef.set(items);
                 }
                 
                 updateDashboardStats();
@@ -1262,27 +1290,6 @@
                 renderStationeryItems();
                 updateStationeryQuantities();
             });
-        }
-
-        // Initialize default items if none exist
-        function initializeDefaultItems() {
-            const defaultItems = {
-                pen: { name: 'Pen', icon: 'bi-pen' },
-                markerPen: { name: 'Marker Pen', icon: 'bi-highlighter' },
-                maskingTape: { name: 'Masking Tape', icon: 'bi-sticky' },
-                mahjongPaper: { name: 'Mahjong Paper', icon: 'bi-file-earmark-text' },
-                stickyNote: { name: 'Sticky Note', icon: 'bi-journal-text' }
-            };
-            
-            itemsRef.set(defaultItems);
-            
-            // Initialize inventory with default quantities
-            const defaultInventory = {};
-            Object.keys(defaultItems).forEach(key => {
-                defaultInventory[key] = 10;
-            });
-            
-            inventoryRef.set(defaultInventory);
         }
 
         // Navigation functions
@@ -1455,7 +1462,17 @@
             stationeryList.innerHTML = '';
             
             if (Object.keys(items).length === 0) {
-                stationeryList.innerHTML = '<p class="text-muted">No stationery items available. Please contact admin.</p>';
+                stationeryList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <div class="empty-state-title">No Stationery Items Available</div>
+                        <div class="empty-state-description">
+                            There are currently no stationery items in the system. Please contact the administrator to add items.
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
@@ -1609,7 +1626,20 @@
             const itemsList = document.getElementById('itemsList');
             
             if (Object.keys(items).length === 0) {
-                itemsList.innerHTML = '<p class="text-muted">No items found. Add your first item!</p>';
+                itemsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-box"></i>
+                        </div>
+                        <div class="empty-state-title">No Items Yet</div>
+                        <div class="empty-state-description">
+                            Start by adding your first stationery item to the system.
+                        </div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="bi bi-plus-circle me-2"></i>Add Your First Item
+                        </button>
+                    </div>
+                `;
                 return;
             }
             
@@ -1660,7 +1690,20 @@
             const inventoryList = document.getElementById('inventoryList');
             
             if (Object.keys(items).length === 0) {
-                inventoryList.innerHTML = '<p class="text-muted">No items in inventory</p>';
+                inventoryList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-stack"></i>
+                        </div>
+                        <div class="empty-state-title">No Inventory Items</div>
+                        <div class="empty-state-description">
+                            Add stationery items to start managing your inventory.
+                        </div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="bi bi-plus-circle me-2"></i>Add Items
+                        </button>
+                    </div>
+                `;
                 return;
             }
             
