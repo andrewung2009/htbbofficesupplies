@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stationery Borrowing Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #06ffa5;
+            --danger-color: #ff006e;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            padding-bottom: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 0.75rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: #06ffa5;
+            color: var(--dark-text);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+        .btn-success:hover {
+            background-color: #00e894;
+            color: var(--dark-text);
+        }
+
+        .stationery-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background-color: white;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .stationery-item:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stationery-item input[type="checkbox"] {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .stationery-item label {
+            margin: 0;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .stationery-icon {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        .log-table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .log-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .log-table th {
+            border: none;
+            padding: 1rem;
+            font-weight: 500;
+        }
+
+        .log-table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .log-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .log-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border-radius: 50px;
+        }
+
+        .badge-returned {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-overdue {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .custom-toast {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .toast-success .toast-icon {
+            color: #28a745;
+        }
+
+        .toast-error .toast-icon {
+            color: #dc3545;
+        }
+
+        .toast-content {
+            flex-grow: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .connection-status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .connection-status i {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .filter-container {
+                flex-direction: column;
+            }
+            
+            .log-table {
+                font-size: 0.875rem;
+            }
+            
+            .log-table th, .log-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Stationery Borrowing Log</h1>
+                    <p class="mb-0 mt-2">Track and manage stationery borrowing efficiently</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <div class="d-inline-block text-start">
+                        <div class="small">Total Items Borrowed</div>
+                        <div class="h3 mb-0" id="totalBorrowed">0</div>
+                    </div>
+                    <div class="d-inline-block text-start ms-4">
+                        <div class="small">Pending Returns</div>
+                        <div class="h3 mb-0" id="pendingReturns">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-pencil-square me-2"></i>Borrow Stationery
+                    </div>
+                    <div class="card-body">
+                        <form id="borrowForm">
+                            <div class="mb-3">
+                                <label for="borrowerName" class="form-label">Borrower Name</label>
+                                <input type="text" class="form-control" id="borrowerName" placeholder="Enter your name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="purpose" class="form-label">Purpose</label>
+                                <textarea class="form-control" id="purpose" rows="2" placeholder="What is the purpose of borrowing?" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="borrowDate" class="form-label">Borrow Date</label>
+                                <input type="datetime-local" class="form-control" id="borrowDate" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="returnDate" class="form-label">Expected Return Date</label>
+                                <input type="datetime-local" class="form-control" id="returnDate" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Select Stationery Items</label>
+                                <div class="stationery-list">
+                                    <div class="stationery-item">
+                                        <i class="bi bi-pen stationery-icon"></i>
+                                        <input type="checkbox" id="pen" name="stationery" value="Pen">
+                                        <label for="pen">Pen</label>
+                                    </div>
+                                    <div class="stationery-item">
+                                        <i class="bi bi-highlighter stationery-icon"></i>
+                                        <input type="checkbox" id="markerPen" name="stationery" value="Marker Pen">
+                                        <label for="markerPen">Marker Pen</label>
+                                    </div>
+                                    <div class="stationery-item">
+                                        <i class="bi bi-sticky stationery-icon"></i>
+                                        <input type="checkbox" id="maskingTape" name="stationery" value="Masking Tape">
+                                        <label for="maskingTape">Masking Tape</label>
+                                    </div>
+                                    <div class="stationery-item">
+                                        <i class="bi bi-file-earmark-text stationery-icon"></i>
+                                        <input type="checkbox" id="mahjongPaper" name="stationery" value="Mahjong Paper">
+                                        <label for="mahjongPaper">Mahjong Paper</label>
+                                    </div>
+                                    <div class="stationery-item">
+                                        <i class="bi bi-journal-text stationery-icon"></i>
+                                        <input type="checkbox" id="stickyNote" name="stationery" value="Sticky Note">
+                                        <label for="stickyNote">Sticky Note</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check-circle me-2"></i>Submit Borrow Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-list-ul me-2"></i>Borrowing Log
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-container">
+                            <div class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by borrower name or purpose...">
+                            </div>
+                            <select class="form-select" id="statusFilter" style="width: auto;">
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="returned">Returned</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Borrower</th>
+                                        <th>Items</th>
+                                        <th>Purpose</th>
+                                        <th>Borrow Date</th>
+                                        <th>Return Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logTableBody">
+                                    <!-- Log entries will be added here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="empty-state" id="emptyState">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No borrowing records yet</h5>
+                            <p>Start by adding a new borrowing request using the form.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="connection-status disconnected" id="connectionStatus">
+        <i class="bi bi-wifi-off"></i>
+        <span>Disconnected</span>
+    </div>
+
+    <script>
+        // Firebase configuration with your provided details
+        const firebaseConfig = {
+            apiKey: "AIzaSyCeQQz9A6r3gMRWR-gQ4G62sMG3HO9NK70",
+            authDomain: "stationery-htbb.firebaseapp.com",
+            databaseURL: "https://stationery-htbb-default-rtdb.firebaseio.com/",
+            projectId: "stationery-htbb",
+            storageBucket: "stationery-htbb.appspot.com",
+            messagingSenderId: "123456789012", // Replace with your actual sender ID
+            appId: "1:123456789012:web:abcdef123456789012345678" // Replace with your actual app ID
+        };
+
+        // Initialize Firebase
+        let database, borrowingLogRef;
+        let borrowingLog = [];
+        let nextId = 1;
+
+        // Initialize Firebase connection
+        function initializeFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                borrowingLogRef = database.ref('borrowingLog');
+                
+                // Set up Firebase listener
+                setupFirebaseListener();
+                
+                // Update connection status
+                updateConnectionStatus(true);
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                updateConnectionStatus(false);
+                showToast('error', 'Firebase Error', 'Failed to initialize Firebase. Please check your configuration.');
+            }
+        }
+
+        // Set default date and time
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('borrowDate').value = localDateTime;
+            
+            // Set default return date to 3 days from now
+            const returnDate = new Date(now);
+            returnDate.setDate(now.getDate() + 3);
+            const returnDateTime = new Date(returnDate.getTime() - returnDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('returnDate').value = returnDateTime;
+            
+            // Initialize Firebase
+            initializeFirebase();
+        });
+
+        // Set up Firebase listener for real-time updates
+        function setupFirebaseListener() {
+            borrowingLogRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Convert object to array
+                    borrowingLog = Object.keys(data).map(key => ({
+                        id: parseInt(key),
+                        ...data[key]
+                    }));
+                    
+                    // Find the highest ID for next entry
+                    if (borrowingLog.length > 0) {
+                        nextId = Math.max(...borrowingLog.map(item => item.id)) + 1;
+                    }
+                } else {
+                    borrowingLog = [];
+                    nextId = 1;
+                }
+                
+                // Update UI
+                renderLog();
+                updateStats();
+                
+                // Update connection status
+                updateConnectionStatus(true);
+            }, (error) => {
+                console.error("Firebase error:", error);
+                updateConnectionStatus(false);
+                showToast('error', 'Connection Error', 'Failed to connect to the database. Please check your connection.');
+            });
+        }
+
+        // Update connection status indicator
+        function updateConnectionStatus(isConnected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusElement.className = 'connection-status connected';
+                statusElement.innerHTML = '<i class="bi bi-wifi"></i><span>Connected to Firebase</span>';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '<i class="bi bi-wifi-off"></i><span>Disconnected</span>';
+            }
+        }
+
+        // Form submission
+        document.getElementById('borrowForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!borrowingLogRef) {
+                showToast('error', 'Not Connected', 'Please wait for Firebase to initialize.');
+                return;
+            }
+            
+            // Get form values
+            const borrowerName = document.getElementById('borrowerName').value;
+            const purpose = document.getElementById('purpose').value;
+            const borrowDate = document.getElementById('borrowDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+            
+            // Get selected stationery items
+            const selectedItems = [];
+            const checkboxes = document.querySelectorAll('input[name="stationery"]:checked');
+            
+            if (checkboxes.length === 0) {
+                showToast('error', 'No Items Selected', 'Please select at least one stationery item.');
+                return;
+            }
+            
+            checkboxes.forEach(checkbox => {
+                selectedItems.push(checkbox.value);
+            });
+            
+            // Create new log entry
+            const newEntry = {
+                borrowerName,
+                purpose,
+                borrowDate,
+                returnDate,
+                items: selectedItems,
+                status: 'pending',
+                actualReturnDate: null
+            };
+            
+            // Add to Firebase
+            borrowingLogRef.child(nextId).set(newEntry)
+                .then(() => {
+                    // Reset form
+                    this.reset();
+                    
+                    // Set default dates again
+                    const now = new Date();
+                    const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                    document.getElementById('borrowDate').value = localDateTime;
+                    
+                    const returnDateDefault = new Date(now);
+                    returnDateDefault.setDate(now.getDate() + 3);
+                    const returnDateTime = new Date(returnDateDefault.getTime() - returnDateDefault.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                    document.getElementById('returnDate').value = returnDateTime;
+                    
+                    // Show success message
+                    showToast('success', 'Borrow Request Submitted', 'Your request has been recorded successfully.');
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                    showToast('error', 'Submission Error', 'Failed to submit your request. Please try again.');
+                });
+        });
+
+        // Render log table
+        function renderLog() {
+            const logTableBody = document.getElementById('logTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            // Filter log entries
+            let filteredLog = borrowingLog.filter(entry => {
+                const matchesSearch = entry.borrowerName.toLowerCase().includes(searchTerm) || 
+                                     entry.purpose.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || entry.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+            
+            // Check for overdue items
+            const now = new Date();
+            filteredLog = filteredLog.map(entry => {
+                if (entry.status === 'pending' && new Date(entry.returnDate) < now) {
+                    return { ...entry, status: 'overdue' };
+                }
+                return entry;
+            });
+            
+            // Clear table
+            logTableBody.innerHTML = '';
+            
+            if (filteredLog.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // Sort by date (newest first)
+            filteredLog.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
+            
+            // Add rows to table
+            filteredLog.forEach(entry => {
+                const row = document.createElement('tr');
+                
+                // Format dates
+                const borrowDate = new Date(entry.borrowDate);
+                const returnDate = new Date(entry.returnDate);
+                const actualReturnDate = entry.actualReturnDate ? new Date(entry.actualReturnDate) : null;
+                
+                // Create status badge
+                let statusBadge = '';
+                if (entry.status === 'returned') {
+                    statusBadge = '<span class="badge badge-returned">Returned</span>';
+                } else if (entry.status === 'overdue') {
+                    statusBadge = '<span class="badge badge-overdue">Overdue</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-pending">Pending</span>';
+                }
+                
+                // Create action button
+                let actionButton = '';
+                if (entry.status !== 'returned') {
+                    actionButton = `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
+                                        <i class="bi bi-check-circle me-1"></i>Mark Returned
+                                    </button>`;
+                } else {
+                    actionButton = `<span class="text-muted">
+                                        Returned on ${actualReturnDate.toLocaleDateString()} ${actualReturnDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </span>`;
+                }
+                
+                // Create items list
+                const itemsList = entry.items.join(', ');
+                
+                row.innerHTML = `
+                    <td>${entry.borrowerName}</td>
+                    <td>${itemsList}</td>
+                    <td>${entry.purpose}</td>
+                    <td>${borrowDate.toLocaleDateString()} ${borrowDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td>${returnDate.toLocaleDateString()} ${returnDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionButton}</td>
+                `;
+                
+                logTableBody.appendChild(row);
+            });
+        }
+
+        // Mark item as returned
+        function markAsReturned(id) {
+            if (!borrowingLogRef) {
+                showToast('error', 'Not Connected', 'Please wait for Firebase to initialize.');
+                return;
+            }
+            
+            const entryIndex = borrowingLog.findIndex(entry => entry.id === id);
+            
+            if (entryIndex !== -1) {
+                const updates = {};
+                updates[id + '/status'] = 'returned';
+                updates[id + '/actualReturnDate'] = new Date().toISOString();
+                
+                borrowingLogRef.update(updates)
+                    .then(() => {
+                        showToast('success', 'Item Returned', 'The stationery has been marked as returned.');
+                    })
+                    .catch((error) => {
+                        console.error("Error updating document: ", error);
+                        showToast('error', 'Update Error', 'Failed to update the return status. Please try again.');
+                    });
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalBorrowed = borrowingLog.length;
+            const pendingReturns = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue').length;
+            
+            document.getElementById('totalBorrowed').textContent = totalBorrowed;
+            document.getElementById('pendingReturns').textContent = pendingReturns;
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', renderLog);
+        document.getElementById('statusFilter').addEventListener('change', renderLog);
+
+        // Show toast notification
+        function showToast(type, title, message) {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${type}`;
+            
+            const iconClass = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="bi ${iconClass}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
