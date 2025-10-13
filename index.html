@@ -1,12 +1,11 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stationery Management System</title>
-    <link rel="icon" type="image/jpg" href="htbblogo.jpg">
+    <title>Office Supplies Management System</title>
+    <link rel="icon" type="image/png" href="https://z-cdn-media.chatglm.cn/files/22211d64-089c-4185-8d1c-13ad9f5b0406_pasted_image_1760324059150.png?auth_key=1791860075-1d7d4ff818dd4b6599c3cdc92f4626d1-0-ec0a5aff206745598e39dde6e0a73260">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Firebase SDK -->
@@ -37,6 +36,17 @@
             overflow-x: hidden;
         }
 
+        /* Logo Styles */
+        .logo {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .landing-title .logo {
+            height: 60px;
+            margin-right: 15px;
+        }
+
         /* Landing Screen Styles */
         .landing-screen {
             min-height: 100vh;
@@ -62,6 +72,10 @@
             font-weight: 700;
             margin-bottom: 1rem;
             animation: fadeInUp 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
         }
 
         .landing-subtitle {
@@ -106,12 +120,6 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1rem;
-        }
-
-        .choice-description {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            line-height: 1.5;
         }
 
         /* Floating shapes for decoration */
@@ -190,6 +198,12 @@
             color: white;
             padding: 1.5rem 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-header h1 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .back-button {
@@ -284,7 +298,7 @@
             transform: translateY(-2px);
         }
 
-        .stationery-item {
+        .office-supplies-item {
             display: flex;
             align-items: center;
             padding: 1rem;
@@ -295,28 +309,28 @@
             transition: all 0.3s ease;
         }
 
-        .stationery-item:hover {
+        .office-supplies-item:hover {
             background-color: #f8f9fa;
             transform: translateX(5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .stationery-icon {
+        .office-supplies-icon {
             margin-right: 1rem;
             color: var(--primary-color);
             font-size: 1.5rem;
         }
 
-        .stationery-details {
+        .office-supplies-details {
             flex-grow: 1;
         }
 
-        .stationery-name {
+        .office-supplies-name {
             font-weight: 500;
             margin-bottom: 0.25rem;
         }
 
-        .stationery-quantity {
+        .office-supplies-quantity {
             display: flex;
             align-items: center;
             background-color: #f8f9fa;
@@ -626,6 +640,11 @@
             color: #721c24;
         }
 
+        .badge-partial {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
         /* Modal Styles */
         .modal-content {
             border-radius: 20px;
@@ -664,6 +683,45 @@
             justify-content: center;
             font-size: 2rem;
             margin: 0 auto 1.5rem;
+        }
+
+        /* Return Items Modal */
+        .return-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .return-item-info {
+            flex-grow: 1;
+        }
+
+        .return-item-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .return-item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .return-quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .return-checkbox {
+            margin-right: 1rem;
+            transform: scale(1.2);
         }
 
         /* Toast Styles */
@@ -941,6 +999,13 @@
         @media (max-width: 768px) {
             .landing-title {
                 font-size: 2rem;
+                flex-direction: column;
+            }
+
+            .landing-title .logo {
+                height: 50px;
+                margin-right: 0;
+                margin-bottom: 10px;
             }
 
             .choice-buttons {
@@ -966,12 +1031,27 @@
                 padding: 0.5rem;
             }
 
-            .stationery-item {
+            .office-supplies-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
             .quantity-selector {
+                margin-top: 0.5rem;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .return-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .return-quantity-control {
                 margin-top: 0.5rem;
                 width: 100%;
                 justify-content: space-between;
@@ -988,17 +1068,17 @@
         
         <div class="landing-content">
             <h1 class="landing-title">
-                <i class="bi bi-clipboard-check me-3"></i>Stationery Management System
+                <img src="https://z-cdn-media.chatglm.cn/files/22211d64-089c-4185-8d1c-13ad9f5b0406_pasted_image_1760324059150.png?auth_key=1791860075-1d7d4ff818dd4b6599c3cdc92f4626d1-0-ec0a5aff206745598e39dde6e0a73260" alt="HTBB Logo" class="logo">
+                Office Supplies Management System
             </h1>
-            <p class="landing-subtitle">Efficiently track and manage stationery borrowing</p>
+            <p class="landing-subtitle">Efficiently track and manage office supplies borrowing</p>
             
             <div class="choice-buttons">
                 <div class="choice-card" onclick="showBorrowingForm()">
                     <div class="choice-icon">
                         <i class="bi bi-pencil-square"></i>
                     </div>
-                    <h3 class="choice-title">Borrow Stationery</h3>
-                    <p class="choice-description">Request to borrow stationery items for your needs</p>
+                    <h3 class="choice-title">Borrow Office Supplies</h3>
                 </div>
                 
                 <div class="choice-card" onclick="showAdminLogin()">
@@ -1006,7 +1086,6 @@
                         <i class="bi bi-gear-fill"></i>
                     </div>
                     <h3 class="choice-title">Admin Portal</h3>
-                    <p class="choice-description">Manage inventory, add items, and view records</p>
                 </div>
             </div>
         </div>
@@ -1019,7 +1098,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <h1 class="mb-0">
-                            <i class="bi bi-pencil-square me-2"></i>Borrow Stationery
+                            <i class="bi bi-pencil-square me-2"></i>Borrow Office Supplies
                         </h1>
                     </div>
                     <div class="col-md-6 text-md-end">
@@ -1052,17 +1131,17 @@
                                 
                                 <div class="mb-3">
                                     <label for="borrowDate" class="form-label">Borrow Date</label>
-                                    <input type="datetime-local" class="form-control" id="borrowDate" required>
+                                    <input type="date" class="form-control" id="borrowDate" required>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="returnDate" class="form-label">Expected Return Date</label>
-                                    <input type="datetime-local" class="form-control" id="returnDate" required>
+                                    <input type="date" class="form-control" id="returnDate" required>
                                 </div>
                                 
                                 <div class="mb-4">
                                     <label class="form-label">Select Items to Borrow</label>
-                                    <div class="stationery-list" id="stationeryList">
+                                    <div class="office-supplies-list" id="officeSuppliesList">
                                         <!-- Items will be loaded dynamically -->
                                     </div>
                                 </div>
@@ -1250,12 +1329,16 @@
                         
                         <div class="status-tabs">
                             <button class="status-tab active" onclick="showStatusTab('pending')">
-                                Pending
+                                On Loan
                                 <span class="badge bg-warning" id="pendingCount">0</span>
                             </button>
                             <button class="status-tab" onclick="showStatusTab('overdue')">
                                 Overdue
                                 <span class="badge bg-danger" id="overdueCount">0</span>
+                            </button>
+                            <button class="status-tab" onclick="showStatusTab('partial')">
+                                Partial Return
+                                <span class="badge bg-info" id="partialCount">0</span>
                             </button>
                             <button class="status-tab" onclick="showStatusTab('returned')">
                                 Returned
@@ -1267,11 +1350,11 @@
                         <div id="pendingItems" class="status-content active">
                             <div class="card">
                                 <div class="card-header">
-                                    <i class="bi bi-clock me-2"></i>Pending Returns
+                                    <i class="bi bi-clock me-2"></i>Items On Loan
                                 </div>
                                 <div class="card-body">
                                     <div id="pendingItemsList">
-                                        <p class="text-muted">Loading pending items...</p>
+                                        <p class="text-muted">Loading items on loan...</p>
                                     </div>
                                 </div>
                             </div>
@@ -1286,6 +1369,20 @@
                                 <div class="card-body">
                                     <div id="overdueItemsList">
                                         <p class="text-muted">Loading overdue items...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Partial Return Items -->
+                        <div id="partialItems" class="status-content">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="bi bi-arrow-left-right me-2"></i>Partial Returns
+                                </div>
+                                <div class="card-body">
+                                    <div id="partialItemsList">
+                                        <p class="text-muted">Loading partial returns...</p>
                                     </div>
                                 </div>
                             </div>
@@ -1375,7 +1472,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New Stationery Item</h5>
+                    <h5 class="modal-title">Add New Office Supplies Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -1385,25 +1482,7 @@
                             <input type="text" class="form-control" id="itemName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="itemIcon" class="form-label">Icon</label>
-                            <select class="form-select" id="itemIcon" required>
-                                <option value="">Select an icon</option>
-                                <option value="bi-pen">Pen</option>
-                                <option value="bi-highlighter">Highlighter</option>
-                                <option value="bi-sticky">Tape</option>
-                                <option value="bi-file-earmark-text">Paper</option>
-                                <option value="bi-journal-text">Notebook</option>
-                                <option value="bi-pencil">Pencil</option>
-                                <option value="bi-eraser">Eraser</option>
-                                <option value="bi-ruler">Ruler</option>
-                                <option value="bi-scissors">Scissors</option>
-                                <option value="bi-clipboard">Clipboard</option>
-                                <option value="bi-calculator">Calculator</option>
-                                <option value="bi-mouse">Mouse</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemQuantity" class="form-label">Initial Quantity</label>
+                            <label for="itemQuantity" class="form-label">Quantity</label>
                             <input type="number" class="form-control" id="itemQuantity" min="0" required>
                         </div>
                     </form>
@@ -1421,7 +1500,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Stationery Item</h5>
+                    <h5 class="modal-title">Edit Office Supplies Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -1431,29 +1510,43 @@
                             <label for="editItemName" class="form-label">Item Name</label>
                             <input type="text" class="form-control" id="editItemName" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editItemIcon" class="form-label">Icon</label>
-                            <select class="form-select" id="editItemIcon" required>
-                                <option value="">Select an icon</option>
-                                <option value="bi-pen">Pen</option>
-                                <option value="bi-highlighter">Highlighter</option>
-                                <option value="bi-sticky">Tape</option>
-                                <option value="bi-file-earmark-text">Paper</option>
-                                <option value="bi-journal-text">Notebook</option>
-                                <option value="bi-pencil">Pencil</option>
-                                <option value="bi-eraser">Eraser</option>
-                                <option value="bi-ruler">Ruler</option>
-                                <option value="bi-scissors">Scissors</option>
-                                <option value="bi-clipboard">Clipboard</option>
-                                <option value="bi-calculator">Calculator</option>
-                                <option value="bi-mouse">Mouse</option>
-                            </select>
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="updateItem()">Update Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Items Modal -->
+    <div class="modal fade" id="returnItemsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-arrow-in-left me-2"></i>Return Items
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Borrower:</strong> <span id="returnBorrowerName"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Purpose:</strong> <span id="returnPurpose"></span>
+                    </div>
+                    <hr>
+                    <div id="returnItemsList">
+                        <!-- Return items will be loaded dynamically -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="processReturn()">
+                        <i class="bi bi-check-circle me-2"></i>Process Return
+                    </button>
                 </div>
             </div>
         </div>
@@ -1491,9 +1584,20 @@
         let items = {};
         let currentFilter = 'all';
         let selectedQuantities = {};
+        let currentReturnId = null;
+        let returnQuantities = {};
 
         // Admin password updated to "htbb"
         const ADMIN_PASSWORD = "htbb";
+
+        // Date formatting function for dd/mm/yy
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2);
+            return `${day}/${month}/${year}`;
+        }
 
         // Initialize Firebase connection
         function initializeFirebase() {
@@ -1555,7 +1659,7 @@
                 
                 updateDashboardStats();
                 renderInventory();
-                updateStationeryQuantities();
+                updateOfficeSuppliesQuantities();
             });
 
             // Listen for items changes
@@ -1571,8 +1675,8 @@
                 
                 updateDashboardStats();
                 renderInventory();
-                renderStationeryItems();
-                updateStationeryQuantities();
+                renderOfficeSuppliesItems();
+                updateOfficeSuppliesQuantities();
             });
         }
 
@@ -1620,15 +1724,15 @@
 
         // Set default dates for borrowing form
         function setDefaultDates() {
-            const now = new Date();
-            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('borrowDate').value = localDateTime;
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
+            document.getElementById('borrowDate').value = todayString;
             
             // Set default return date to 3 days from now
-            const returnDate = new Date(now);
-            returnDate.setDate(now.getDate() + 3);
-            const returnDateTime = new Date(returnDate.getTime() - returnDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('returnDate').value = returnDateTime;
+            const returnDate = new Date(today);
+            returnDate.setDate(today.getDate() + 3);
+            const returnDateString = returnDate.toISOString().split('T')[0];
+            document.getElementById('returnDate').value = returnDateString;
         }
 
         // Admin login form submission
@@ -1670,7 +1774,7 @@
             const borrowDate = document.getElementById('borrowDate').value;
             const returnDate = document.getElementById('returnDate').value;
             
-            // Get selected stationery items with quantities
+            // Get selected office supplies items with quantities
             const selectedItems = [];
             let itemsAvailable = true;
             let unavailableItems = [];
@@ -1687,7 +1791,8 @@
                     } else {
                         selectedItems.push({
                             name: item.name,
-                            quantity: quantity
+                            quantity: quantity,
+                            returned: 0 // Track returned quantity
                         });
                         selectedItemIds.push({
                             id: itemId,
@@ -1698,7 +1803,7 @@
             });
             
             if (selectedItems.length === 0) {
-                showToast('error', 'No Items Selected', 'Please select at least one stationery item with quantity.');
+                showToast('error', 'No Items Selected', 'Please select at least one office supplies item with quantity.');
                 return;
             }
             
@@ -1749,20 +1854,20 @@
                 });
         });
 
-        // Render stationery items dynamically
-        function renderStationeryItems() {
-            const stationeryList = document.getElementById('stationeryList');
-            stationeryList.innerHTML = '';
+        // Render office supplies items dynamically
+        function renderOfficeSuppliesItems() {
+            const officeSuppliesList = document.getElementById('officeSuppliesList');
+            officeSuppliesList.innerHTML = '';
             
             if (Object.keys(items).length === 0) {
-                stationeryList.innerHTML = `
+                officeSuppliesList.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">
                             <i class="bi bi-inbox"></i>
                         </div>
-                        <div class="empty-state-title">No Stationery Items Available</div>
+                        <div class="empty-state-title">No Office Supplies Items Available</div>
                         <div class="empty-state-description">
-                            There are currently no stationery items in the system. Please contact the administrator to add items.
+                            There are currently no office supplies items in the system. Please contact the administrator to add items.
                         </div>
                     </div>
                 `;
@@ -1781,13 +1886,13 @@
                 
                 const selectedQuantity = selectedQuantities[id] || 0;
                 
-                const stationeryItem = document.createElement('div');
-                stationeryItem.className = 'stationery-item';
-                stationeryItem.innerHTML = `
-                    <i class="bi ${item.icon} stationery-icon"></i>
-                    <div class="stationery-details">
-                        <div class="stationery-name">${item.name}</div>
-                        <div class="stationery-quantity">
+                const officeSuppliesItem = document.createElement('div');
+                officeSuppliesItem.className = 'office-supplies-item';
+                officeSuppliesItem.innerHTML = `
+                    <i class="bi bi-box office-supplies-icon"></i>
+                    <div class="office-supplies-details">
+                        <div class="office-supplies-name">${item.name}</div>
+                        <div class="office-supplies-quantity">
                             <span>Available:</span>
                             <span class="quantity-badge ${quantityClass}" id="${id}-available">${quantity}</span>
                         </div>
@@ -1803,7 +1908,7 @@
                     </div>
                 `;
                 
-                stationeryList.appendChild(stationeryItem);
+                officeSuppliesList.appendChild(officeSuppliesItem);
             });
         }
 
@@ -1890,8 +1995,8 @@
             summaryItems.innerHTML = html;
         }
 
-        // Update stationery quantities
-        function updateStationeryQuantities() {
+        // Update office supplies quantities
+        function updateOfficeSuppliesQuantities() {
             Object.entries(items).forEach(([id, item]) => {
                 const quantity = inventory[id] || 0;
                 const badge = document.getElementById(`${id}-available`);
@@ -1951,16 +2056,18 @@
             let html = '';
             recent.forEach(entry => {
                 const statusClass = entry.status === 'returned' ? 'badge-returned' : 
-                                   entry.status === 'overdue' ? 'badge-overdue' : 'badge-pending';
+                                   entry.status === 'overdue' ? 'badge-overdue' : 
+                                   entry.status === 'partial' ? 'badge-partial' : 'badge-pending';
                 
-                // Format items with quantities
-                const itemsText = entry.items.map(item => 
-                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                ).join(', ');
+                // Format items with quantities and returned amounts
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
                 
                 const actionButton = entry.status !== 'returned' ? 
-                    `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                        <i class="bi bi-check-circle me-1"></i>Mark as Return
+                    `<button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                        <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
                     </button>` : 
                     '<span class="text-muted">Returned</span>';
                 
@@ -1968,7 +2075,7 @@
                     <tr>
                         <td>${entry.borrowerName}</td>
                         <td>${itemsText}</td>
-                        <td><span class="badge ${statusClass}">${entry.status}</span></td>
+                        <td><span class="badge ${statusClass}">${getStatusText(entry.status)}</span></td>
                         <td>${actionButton}</td>
                     </tr>
                 `;
@@ -1977,11 +2084,207 @@
             tableBody.innerHTML = html;
         }
 
+        // Get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'On loan';
+                case 'partial': return 'Partial return';
+                case 'overdue': return 'Overdue';
+                case 'returned': return 'Returned';
+                default: return status;
+            }
+        }
+
+        // Show return modal
+        function showReturnModal(id) {
+            currentReturnId = id;
+            returnQuantities = {};
+            
+            const entry = borrowingLog.find(e => e.id === id);
+            if (!entry) return;
+            
+            // Set borrower info
+            document.getElementById('returnBorrowerName').textContent = entry.borrowerName;
+            document.getElementById('returnPurpose').textContent = entry.purpose;
+            
+            // Build return items list
+            const returnItemsList = document.getElementById('returnItemsList');
+            returnItemsList.innerHTML = '';
+            
+            entry.items.forEach((item, index) => {
+                const remainingQuantity = item.quantity - (item.returned || 0);
+                
+                if (remainingQuantity > 0) {
+                    const returnItem = document.createElement('div');
+                    returnItem.className = 'return-item';
+                    returnItem.innerHTML = `
+                        <input type="checkbox" class="return-checkbox" id="return-${index}" onchange="toggleReturnItem(${index}, ${remainingQuantity})">
+                        <div class="return-item-info">
+                            <div class="return-item-name">${item.name}</div>
+                            <div class="return-item-details">
+                                <span>Borrowed: ${item.quantity}</span>
+                                <span>Already returned: ${item.returned || 0}</span>
+                                <span>Remaining: ${remainingQuantity}</span>
+                            </div>
+                        </div>
+                        <div class="return-quantity-control">
+                            <button type="button" class="quantity-btn" onclick="decreaseReturnQuantity(${index})" disabled>
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" class="quantity-input" id="return-quantity-${index}" value="0" min="0" max="${remainingQuantity}" readonly>
+                            <button type="button" class="quantity-btn" onclick="increaseReturnQuantity(${index})" disabled>
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    `;
+                    returnItemsList.appendChild(returnItem);
+                    
+                    // Initialize return quantities
+                    returnQuantities[index] = 0;
+                }
+            });
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('returnItemsModal'));
+            modal.show();
+        }
+
+        // Toggle return item selection
+        function toggleReturnItem(index, maxQuantity) {
+            const checkbox = document.getElementById(`return-${index}`);
+            const quantityInput = document.getElementById(`return-quantity-${index}`);
+            const decreaseBtn = checkbox.parentElement.querySelector('.quantity-btn:first-of-type');
+            const increaseBtn = checkbox.parentElement.querySelector('.quantity-btn:last-of-type');
+            
+            if (checkbox.checked) {
+                returnQuantities[index] = 1;
+                quantityInput.value = 1;
+                decreaseBtn.disabled = false;
+                increaseBtn.disabled = maxQuantity <= 1;
+            } else {
+                returnQuantities[index] = 0;
+                quantityInput.value = 0;
+                decreaseBtn.disabled = true;
+                increaseBtn.disabled = true;
+            }
+        }
+
+        // Increase return quantity
+        function increaseReturnQuantity(index) {
+            const entry = borrowingLog.find(e => e.id === currentReturnId);
+            if (!entry) return;
+            
+            const item = entry.items[index];
+            const maxQuantity = item.quantity - (item.returned || 0);
+            const current = returnQuantities[index] || 0;
+            
+            if (current < maxQuantity) {
+                returnQuantities[index] = current + 1;
+                document.getElementById(`return-quantity-${index}`).value = returnQuantities[index];
+                
+                // Update button states
+                const decreaseBtn = document.querySelector(`#return-${index}`).parentElement.querySelector('.quantity-btn:first-of-type');
+                const increaseBtn = document.querySelector(`#return-${index}`).parentElement.querySelector('.quantity-btn:last-of-type');
+                
+                decreaseBtn.disabled = false;
+                if (returnQuantities[index] >= maxQuantity) {
+                    increaseBtn.disabled = true;
+                }
+            }
+        }
+
+        // Decrease return quantity
+        function decreaseReturnQuantity(index) {
+            const current = returnQuantities[index] || 0;
+            
+            if (current > 0) {
+                returnQuantities[index] = current - 1;
+                document.getElementById(`return-quantity-${index}`).value = returnQuantities[index];
+                
+                // Update button states
+                const decreaseBtn = document.querySelector(`#return-${index}`).parentElement.querySelector('.quantity-btn:first-of-type');
+                const increaseBtn = document.querySelector(`#return-${index}`).parentElement.querySelector('.quantity-btn:last-of-type');
+                
+                increaseBtn.disabled = false;
+                if (returnQuantities[index] <= 0) {
+                    decreaseBtn.disabled = true;
+                }
+            }
+        }
+
+        // Process return
+        function processReturn() {
+            const entry = borrowingLog.find(e => e.id === currentReturnId);
+            if (!entry) return;
+            
+            // Check if any items are selected for return
+            const totalReturnQuantity = Object.values(returnQuantities).reduce((sum, qty) => sum + qty, 0);
+            if (totalReturnQuantity === 0) {
+                showToast('error', 'No Items Selected', 'Please select at least one item to return.');
+                return;
+            }
+            
+            // Prepare updates
+            const updates = {};
+            const inventoryUpdates = {};
+            let allItemsReturned = true;
+            
+            // Update borrowing log with returned quantities
+            entry.items.forEach((item, index) => {
+                const returnQuantity = returnQuantities[index] || 0;
+                if (returnQuantity > 0) {
+                    // Update returned quantity
+                    updates[`borrowingLog/${currentReturnId}/items/${index}/returned`] = (item.returned || 0) + returnQuantity;
+                    
+                    // Update inventory
+                    const itemId = Object.keys(items).find(key => {
+                        return items[key].name.toLowerCase() === item.name.toLowerCase();
+                    });
+                    
+                    if (itemId) {
+                        inventoryUpdates[`inventory/${itemId}`] = (inventory[itemId] || 0) + returnQuantity;
+                    }
+                }
+                
+                // Check if all items are fully returned
+                const totalReturned = (item.returned || 0) + (returnQuantities[index] || 0);
+                if (totalReturned < item.quantity) {
+                    allItemsReturned = false;
+                }
+            });
+            
+            // Update status and return date
+            if (allItemsReturned) {
+                updates[`borrowingLog/${currentReturnId}/status`] = 'returned';
+                updates[`borrowingLog/${currentReturnId}/actualReturnDate`] = new Date().toISOString().split('T')[0];
+            } else {
+                updates[`borrowingLog/${currentReturnId}/status`] = 'partial';
+            }
+            
+            // Apply updates
+            database.ref().update({ ...updates, ...inventoryUpdates })
+                .then(() => {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('returnItemsModal')).hide();
+                    
+                    // Show success message
+                    if (allItemsReturned) {
+                        showToast('success', 'All Items Returned', 'All items have been successfully returned.');
+                    } else {
+                        showToast('success', 'Partial Return Processed', 'Selected items have been returned. Some items are still on loan.');
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error processing return:", error);
+                    showToast('error', 'Return Error', 'Failed to process the return. Please try again.');
+                });
+        }
+
         // Admin functions
         function updateDashboardStats() {
             const totalItems = Object.keys(items).length;
             const availableItems = Object.values(inventory).reduce((sum, qty) => sum + qty, 0);
-            const activeBorrows = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue').length;
+            const activeBorrows = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue' || entry.status === 'partial').length;
             const lowStock = Object.values(inventory).filter(qty => qty <= 3).length;
             
             document.getElementById('totalItems').textContent = totalItems;
@@ -2008,12 +2311,14 @@
             recent.forEach(entry => {
                 const date = new Date(entry.borrowDate);
                 const statusClass = entry.status === 'returned' ? 'success' : 
-                                   entry.status === 'overdue' ? 'danger' : 'warning';
+                                   entry.status === 'overdue' ? 'danger' : 
+                                   entry.status === 'partial' ? 'info' : 'warning';
                 
-                // Format items with quantities
-                const itemsText = entry.items.map(item => 
-                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                ).join(', ');
+                // Format items with quantities and returned amounts
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
                 
                 html += `
                     <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -2022,8 +2327,8 @@
                             <small class="text-muted">Borrowed: ${itemsText}</small>
                         </div>
                         <div class="text-end">
-                            <span class="badge bg-${statusClass}">${entry.status}</span>
-                            <div><small class="text-muted">${date.toLocaleDateString()}</small></div>
+                            <span class="badge bg-${statusClass}">${getStatusText(entry.status)}</span>
+                            <div><small class="text-muted">${formatDate(entry.borrowDate)}</small></div>
                         </div>
                     </div>
                 `;
@@ -2044,7 +2349,7 @@
                         </div>
                         <div class="empty-state-title">No Inventory Items</div>
                         <div class="empty-state-description">
-                            Add stationery items to start managing your inventory.
+                            Add office supplies items to start managing your inventory.
                         </div>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                             <i class="bi bi-plus-circle me-2"></i>Add Items
@@ -2100,7 +2405,7 @@
                         <div class="item-header">
                             <div class="item-info">
                                 <div class="item-icon">
-                                    <i class="bi ${item.icon}"></i>
+                                    <i class="bi bi-box"></i>
                                 </div>
                                 <div>
                                     <div class="item-name">${item.name}</div>
@@ -2165,10 +2470,9 @@
 
         function addNewItem() {
             const name = document.getElementById('itemName').value;
-            const icon = document.getElementById('itemIcon').value;
             const quantity = parseInt(document.getElementById('itemQuantity').value);
             
-            if (!name || !icon) {
+            if (!name) {
                 showToast('error', 'Validation Error', 'Please fill in all fields.');
                 return;
             }
@@ -2184,7 +2488,7 @@
             
             // Add item to Firebase
             const updates = {};
-            updates[`items/${id}`] = { name, icon };
+            updates[`items/${id}`] = { name };
             updates[`inventory/${id}`] = quantity;
             
             database.ref().update(updates)
@@ -2207,7 +2511,6 @@
             
             document.getElementById('editItemId').value = itemId;
             document.getElementById('editItemName').value = item.name;
-            document.getElementById('editItemIcon').value = item.icon;
             
             // Show modal
             new bootstrap.Modal(document.getElementById('editItemModal')).show();
@@ -2216,15 +2519,14 @@
         function updateItem() {
             const itemId = document.getElementById('editItemId').value;
             const name = document.getElementById('editItemName').value;
-            const icon = document.getElementById('editItemIcon').value;
             
-            if (!name || !icon) {
+            if (!name) {
                 showToast('error', 'Validation Error', 'Please fill in all fields.');
                 return;
             }
             
             // Update item in Firebase
-            itemsRef.child(itemId).set({ name, icon })
+            itemsRef.child(itemId).set({ name })
                 .then(() => {
                     // Close modal
                     bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
@@ -2268,10 +2570,15 @@
                        entry.purpose.toLowerCase().includes(searchTerm);
             });
             
-            // Check for overdue items
-            const now = new Date();
+            // Check for overdue items - item is overdue if current date is after return date
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to midnight for comparison
+            
             filteredRecords = filteredRecords.map(entry => {
-                if (entry.status === 'pending' && new Date(entry.returnDate) < now) {
+                const returnDate = new Date(entry.returnDate);
+                returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                
+                if (entry.status === 'pending' && today > returnDate) {
                     return { ...entry, status: 'overdue' };
                 }
                 return entry;
@@ -2298,24 +2605,27 @@
                     statusBadge = '<span class="badge badge-returned">Returned</span>';
                 } else if (entry.status === 'overdue') {
                     statusBadge = '<span class="badge badge-overdue">Overdue</span>';
+                } else if (entry.status === 'partial') {
+                    statusBadge = '<span class="badge badge-partial">Partial Return</span>';
                 } else {
-                    statusBadge = '<span class="badge badge-pending">Pending</span>';
+                    statusBadge = '<span class="badge badge-pending">On loan</span>';
                 }
                 
-                // Format items with quantities
-                const itemsText = entry.items.map(item => 
-                    `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                ).join(', ');
+                // Format items with quantities and returned amounts
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
                 
                 // Create action button
                 let actionButton = '';
                 if (entry.status !== 'returned') {
-                    actionButton = `<button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                                        <i class="bi bi-check-circle me-1"></i>Mark as Return
+                    actionButton = `<button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                        <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
                                     </button>`;
                 } else {
                     actionButton = `<span class="text-muted">
-                                        Returned on ${actualReturnDate.toLocaleDateString()}
+                                        Returned on ${formatDate(entry.actualReturnDate)}
                                     </span>`;
                 }
                 
@@ -2325,8 +2635,8 @@
                         <td>${entry.borrowerName}</td>
                         <td>${itemsText}</td>
                         <td>${entry.purpose}</td>
-                        <td>${borrowDate.toLocaleDateString()}</td>
-                        <td>${returnDate.toLocaleDateString()}</td>
+                        <td>${formatDate(entry.borrowDate)}</td>
+                        <td>${formatDate(entry.returnDate)}</td>
                         <td>${statusBadge}</td>
                         <td>${actionButton}</td>
                     </tr>
@@ -2356,53 +2666,70 @@
         }
 
         function updateStatusCounts() {
-            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to midnight for comparison
+            
             let pendingCount = 0;
             let overdueCount = 0;
+            let partialCount = 0;
             let returnedCount = 0;
             
             borrowingLog.forEach(entry => {
                 if (entry.status === 'returned') {
                     returnedCount++;
-                } else if (entry.status === 'overdue' || (entry.status === 'pending' && new Date(entry.returnDate) < now)) {
-                    overdueCount++;
+                } else if (entry.status === 'partial') {
+                    partialCount++;
                 } else {
-                    pendingCount++;
+                    const returnDate = new Date(entry.returnDate);
+                    returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                    
+                    if (today > returnDate) {
+                        overdueCount++;
+                    } else {
+                        pendingCount++;
+                    }
                 }
             });
             
             document.getElementById('pendingCount').textContent = pendingCount;
             document.getElementById('overdueCount').textContent = overdueCount;
+            document.getElementById('partialCount').textContent = partialCount;
             document.getElementById('returnedCount').textContent = returnedCount;
         }
 
         function updateStatusLists() {
-            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to midnight for comparison
             
             // Update pending items
             const pendingList = document.getElementById('pendingItemsList');
             const pendingItems = borrowingLog.filter(entry => {
-                return entry.status === 'pending' && new Date(entry.returnDate) >= now;
+                if (entry.status === 'returned' || entry.status === 'partial') return false;
+                
+                const returnDate = new Date(entry.returnDate);
+                returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                
+                return today <= returnDate;
             }).sort((a, b) => new Date(a.returnDate) - new Date(b.returnDate));
             
             if (pendingItems.length === 0) {
-                pendingList.innerHTML = '<p class="text-muted">No pending items</p>';
+                pendingList.innerHTML = '<p class="text-muted">No items on loan</p>';
             } else {
                 let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Action</th></tr></thead><tbody>';
                 pendingItems.forEach(entry => {
-                    const returnDate = new Date(entry.returnDate);
-                    const itemsText = entry.items.map(item => 
-                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                    ).join(', ');
+                    const itemsText = entry.items.map(item => {
+                        const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                        return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                    }).join(', ');
                     
                     html += `
                         <tr>
                             <td>${entry.borrowerName}</td>
                             <td>${itemsText}</td>
-                            <td>${returnDate.toLocaleDateString()}</td>
+                            <td>${formatDate(entry.returnDate)}</td>
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                                    <i class="bi bi-check-circle me-1"></i>Mark as Return
+                                <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
                                 </button>
                             </td>
                         </tr>
@@ -2415,7 +2742,12 @@
             // Update overdue items
             const overdueList = document.getElementById('overdueItemsList');
             const overdueItems = borrowingLog.filter(entry => {
-                return entry.status === 'overdue' || (entry.status === 'pending' && new Date(entry.returnDate) < now);
+                if (entry.status === 'returned' || entry.status === 'partial') return false;
+                
+                const returnDate = new Date(entry.returnDate);
+                returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                
+                return today > returnDate;
             }).sort((a, b) => new Date(a.returnDate) - new Date(b.returnDate));
             
             if (overdueItems.length === 0) {
@@ -2424,20 +2756,23 @@
                 let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr></thead><tbody>';
                 overdueItems.forEach(entry => {
                     const returnDate = new Date(entry.returnDate);
-                    const daysOverdue = Math.floor((now - returnDate) / (1000 * 60 * 60 * 24));
-                    const itemsText = entry.items.map(item => 
-                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                    ).join(', ');
+                    returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                    
+                    const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
+                    const itemsText = entry.items.map(item => {
+                        const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                        return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                    }).join(', ');
                     
                     html += `
                         <tr>
                             <td>${entry.borrowerName}</td>
                             <td>${itemsText}</td>
-                            <td>${returnDate.toLocaleDateString()}</td>
+                            <td>${formatDate(entry.returnDate)}</td>
                             <td><span class="badge bg-danger">${daysOverdue} days</span></td>
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="markAsReturned(${entry.id})">
-                                    <i class="bi bi-check-circle me-1"></i>Mark as Return
+                                <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
                                 </button>
                             </td>
                         </tr>
@@ -2445,6 +2780,38 @@
                 });
                 html += '</tbody></table></div>';
                 overdueList.innerHTML = html;
+            }
+            
+            // Update partial return items
+            const partialList = document.getElementById('partialItemsList');
+            const partialItems = borrowingLog.filter(entry => entry.status === 'partial')
+                .sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
+            
+            if (partialItems.length === 0) {
+                partialList.innerHTML = '<p class="text-muted">No partial returns</p>';
+            } else {
+                let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Action</th></tr></thead><tbody>';
+                partialItems.forEach(entry => {
+                    const itemsText = entry.items.map(item => {
+                        const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                        return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                    }).join(', ');
+                    
+                    html += `
+                        <tr>
+                            <td>${entry.borrowerName}</td>
+                            <td>${itemsText}</td>
+                            <td>${formatDate(entry.borrowDate)}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return More
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table></div>';
+                partialList.innerHTML = html;
             }
             
             // Update returned items
@@ -2458,56 +2825,23 @@
             } else {
                 let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Return Date</th></tr></thead><tbody>';
                 returnedItems.forEach(entry => {
-                    const borrowDate = new Date(entry.borrowDate);
-                    const actualReturnDate = new Date(entry.actualReturnDate);
-                    const itemsText = entry.items.map(item => 
-                        `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}`
-                    ).join(', ');
+                    const itemsText = entry.items.map(item => {
+                        const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                        return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                    }).join(', ');
                     
                     html += `
                         <tr>
                             <td>${entry.borrowerName}</td>
                             <td>${itemsText}</td>
-                            <td>${borrowDate.toLocaleDateString()}</td>
-                            <td>${actualReturnDate.toLocaleDateString()}</td>
+                            <td>${formatDate(entry.borrowDate)}</td>
+                            <td>${formatDate(entry.actualReturnDate)}</td>
                         </tr>
                     `;
                 });
                 html += '</tbody></table></div>';
                 returnedList.innerHTML = html;
             }
-        }
-
-        function markAsReturned(id) {
-            const entry = borrowingLog.find(e => e.id === id);
-            if (!entry) return;
-            
-            // Update log entry
-            const updates = {};
-            updates[`borrowingLog/${id}/status`] = 'returned';
-            updates[`borrowingLog/${id}/actualReturnDate`] = new Date().toISOString();
-            
-            // Update inventory quantities
-            entry.items.forEach(item => {
-                // Find the corresponding inventory item ID
-                const itemId = Object.keys(items).find(key => {
-                    return items[key].name.toLowerCase() === item.name.toLowerCase();
-                });
-                
-                if (itemId && inventory[itemId] !== undefined) {
-                    updates[`inventory/${itemId}`] = (inventory[itemId] || 0) + item.quantity;
-                }
-            });
-            
-            // Update both log and inventory
-            database.ref().update(updates)
-                .then(() => {
-                    showToast('success', 'Item Returned', 'The stationery has been marked as returned and inventory updated.');
-                })
-                .catch((error) => {
-                    console.error("Error updating:", error);
-                    showToast('error', 'Update Error', 'Failed to update the return status or inventory. Please try again.');
-                });
         }
 
         // Search functionality
