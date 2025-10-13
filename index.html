@@ -1121,12 +1121,12 @@
                             <form id="borrowForm">
                                 <div class="mb-3">
                                     <label for="borrowerName" class="form-label">Your Name</label>
-                                    <input type="text" class="form-control" id="borrowerName" placeholder="Enter your name" required>
+                                    <input type="text" class="form-control" id="borrowerName" required>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="purpose" class="form-label">Purpose</label>
-                                    <textarea class="form-control" id="purpose" rows="2" placeholder="What is the purpose of borrowing?" required></textarea>
+                                    <textarea class="form-control" id="purpose" rows="2" required></textarea>
                                 </div>
                                 
                                 <div class="mb-3">
@@ -1176,13 +1176,15 @@
                                         <tr>
                                             <th>Borrower</th>
                                             <th>Items</th>
+                                            <th>Borrow Date</th>
+                                            <th>Return Date</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="recentBorrowingTable">
                                         <tr>
-                                            <td colspan="4" class="text-center text-muted">Loading records...</td>
+                                            <td colspan="6" class="text-center text-muted">Loading records...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -2049,7 +2051,7 @@
                 .slice(0, 5);
             
             if (recent.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No records found</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No records found</td></tr>';
                 return;
             }
             
@@ -2075,6 +2077,8 @@
                     <tr>
                         <td>${entry.borrowerName}</td>
                         <td>${itemsText}</td>
+                        <td>${formatDate(entry.borrowDate)}</td>
+                        <td>${formatDate(entry.returnDate)}</td>
                         <td><span class="badge ${statusClass}">${getStatusText(entry.status)}</span></td>
                         <td>${actionButton}</td>
                     </tr>
