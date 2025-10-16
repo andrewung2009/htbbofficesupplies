@@ -1349,9 +1349,13 @@ function updateStatusCounts() {
     document.getElementById('returnedCount').textContent = returnedCount;
 }
 
+// FIXED: Update status lists with mobile support
 function updateStatusLists() {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to midnight for comparison
+    
+    // Check if we should show mobile view
+    const isMobile = window.innerWidth <= 768;
     
     // Update pending items
     const pendingList = document.getElementById('pendingItemsList');
@@ -1367,28 +1371,63 @@ function updateStatusLists() {
     if (pendingItems.length === 0) {
         pendingList.innerHTML = '<p class="text-muted">No items on loan</p>';
     } else {
-        let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Action</th></tr></thead><tbody>';
-        pendingItems.forEach(entry => {
-            const itemsText = entry.items.map(item => {
-                const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
-                return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
-            }).join(', ');
-            
-            html += `
-                <tr>
-                    <td>${entry.borrowerName}</td>
-                    <td>${itemsText}</td>
-                    <td>${formatDate(entry.returnDate)}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
-                            <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        html += '</tbody></table></div>';
-        pendingList.innerHTML = html;
+        if (isMobile) {
+            // Mobile card view
+            let html = '';
+            pendingItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">${entry.borrowerName}</div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Items:</div>
+                            <div class="mobile-card-value">${itemsText}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Due Date:</div>
+                            <div class="mobile-card-value">${formatDate(entry.returnDate)}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Action:</div>
+                            <div class="mobile-card-value">
+                                <button class="btn btn-success btn-sm w-100" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            pendingList.innerHTML = html;
+        } else {
+            // Desktop table view
+            let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Action</th></tr></thead><tbody>';
+            pendingItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <tr>
+                        <td>${entry.borrowerName}</td>
+                        <td>${itemsText}</td>
+                        <td>${formatDate(entry.returnDate)}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table></div>';
+            pendingList.innerHTML = html;
+        }
     }
     
     // Update overdue items
@@ -1405,33 +1444,78 @@ function updateStatusLists() {
     if (overdueItems.length === 0) {
         overdueList.innerHTML = '<p class="text-muted">No overdue items</p>';
     } else {
-        let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr></thead><tbody>';
-        overdueItems.forEach(entry => {
-            const returnDate = new Date(entry.returnDate);
-            returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
-            
-            const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
-            const itemsText = entry.items.map(item => {
-                const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
-                return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
-            }).join(', ');
-            
-            html += `
-                <tr>
-                    <td>${entry.borrowerName}</td>
-                    <td>${itemsText}</td>
-                    <td>${formatDate(entry.returnDate)}</td>
-                    <td><span class="badge bg-danger">${daysOverdue} days</span></td>
-                    <td>
-                        <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
-                            <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        html += '</tbody></table></div>';
-        overdueList.innerHTML = html;
+        if (isMobile) {
+            // Mobile card view
+            let html = '';
+            overdueItems.forEach(entry => {
+                const returnDate = new Date(entry.returnDate);
+                returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                
+                const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">${entry.borrowerName}</div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Items:</div>
+                            <div class="mobile-card-value">${itemsText}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Due Date:</div>
+                            <div class="mobile-card-value">${formatDate(entry.returnDate)}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Days Overdue:</div>
+                            <div class="mobile-card-value">
+                                <span class="badge bg-danger">${daysOverdue} days</span>
+                            </div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Action:</div>
+                            <div class="mobile-card-value">
+                                <button class="btn btn-success btn-sm w-100" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            overdueList.innerHTML = html;
+        } else {
+            // Desktop table view
+            let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr></thead><tbody>';
+            overdueItems.forEach(entry => {
+                const returnDate = new Date(entry.returnDate);
+                returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+                
+                const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <tr>
+                        <td>${entry.borrowerName}</td>
+                        <td>${itemsText}</td>
+                        <td>${formatDate(entry.returnDate)}</td>
+                        <td><span class="badge bg-danger">${daysOverdue} days</span></td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table></div>';
+            overdueList.innerHTML = html;
+        }
     }
     
     // Update partial return items
@@ -1442,28 +1526,63 @@ function updateStatusLists() {
     if (partialItems.length === 0) {
         partialList.innerHTML = '<p class="text-muted">No partial returns</p>';
     } else {
-        let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Action</th></tr></thead><tbody>';
-        partialItems.forEach(entry => {
-            const itemsText = entry.items.map(item => {
-                const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
-                return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
-            }).join(', ');
-            
-            html += `
-                <tr>
-                    <td>${entry.borrowerName}</td>
-                    <td>${itemsText}</td>
-                    <td>${formatDate(entry.borrowDate)}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
-                            <i class="bi bi-box-arrow-in-left me-1"></i>Return More
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        html += '</tbody></table></div>';
-        partialList.innerHTML = html;
+        if (isMobile) {
+            // Mobile card view
+            let html = '';
+            partialItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">${entry.borrowerName}</div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Items:</div>
+                            <div class="mobile-card-value">${itemsText}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Borrow Date:</div>
+                            <div class="mobile-card-value">${formatDate(entry.borrowDate)}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Action:</div>
+                            <div class="mobile-card-value">
+                                <button class="btn btn-success btn-sm w-100" onclick="showReturnModal(${entry.id})">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i>Return More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            partialList.innerHTML = html;
+        } else {
+            // Desktop table view
+            let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Action</th></tr></thead><tbody>';
+            partialItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <tr>
+                        <td>${entry.borrowerName}</td>
+                        <td>${itemsText}</td>
+                        <td>${formatDate(entry.borrowDate)}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
+                                <i class="bi bi-box-arrow-in-left me-1"></i>Return More
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table></div>';
+            partialList.innerHTML = html;
+        }
     }
     
     // Update returned items
@@ -1475,24 +1594,55 @@ function updateStatusLists() {
     if (returnedItems.length === 0) {
         returnedList.innerHTML = '<p class="text-muted">No returned items</p>';
     } else {
-        let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Return Date</th></tr></thead><tbody>';
-        returnedItems.forEach(entry => {
-            const itemsText = entry.items.map(item => {
-                const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
-                return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
-            }).join(', ');
-            
-            html += `
-                <tr>
-                    <td>${entry.borrowerName}</td>
-                    <td>${itemsText}</td>
-                    <td>${formatDate(entry.borrowDate)}</td>
-                    <td>${formatDate(entry.actualReturnDate)}</td>
-                </tr>
-            `;
-        });
-        html += '</tbody></table></div>';
-        returnedList.innerHTML = html;
+        if (isMobile) {
+            // Mobile card view
+            let html = '';
+            returnedItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">${entry.borrowerName}</div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Items:</div>
+                            <div class="mobile-card-value">${itemsText}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Borrow Date:</div>
+                            <div class="mobile-card-value">${formatDate(entry.borrowDate)}</div>
+                        </div>
+                        <div class="mobile-card-row">
+                            <div class="mobile-card-label">Return Date:</div>
+                            <div class="mobile-card-value">${formatDate(entry.actualReturnDate)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            returnedList.innerHTML = html;
+        } else {
+            // Desktop table view
+            let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Borrower</th><th>Items</th><th>Borrow Date</th><th>Return Date</th></tr></thead><tbody>';
+            returnedItems.forEach(entry => {
+                const itemsText = entry.items.map(item => {
+                    const returnedText = item.returned > 0 ? ` (${item.returned}/${item.quantity} returned)` : '';
+                    return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
+                }).join(', ');
+                
+                html += `
+                    <tr>
+                        <td>${entry.borrowerName}</td>
+                        <td>${itemsText}</td>
+                        <td>${formatDate(entry.borrowDate)}</td>
+                        <td>${formatDate(entry.actualReturnDate)}</td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table></div>';
+            returnedList.innerHTML = html;
+        }
     }
 }
 
@@ -1549,10 +1699,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if mobile view on load
     updateRecentBorrowingTable();
     updateRecordsTable();
+    updateStatusLists();
     
     // Add resize event listener to handle orientation changes
     window.addEventListener('resize', function() {
         updateRecentBorrowingTable();
         updateRecordsTable();
+        updateStatusLists();
     });
 });
