@@ -502,15 +502,30 @@ function updateOfficeSuppliesQuantities() {
     updateSummary();
 }
 
-// Update recent borrowing table
+// Update recent borrowing table - FIXED TO SHOW OVERDUE ITEMS
 function updateRecentBorrowingTable() {
     const tableBody = document.getElementById('recentBorrowingTable');
     const mobileContainer = document.getElementById('recentBorrowingMobile');
     
     // Get recent records (last 5)
-    const recent = [...borrowingLog]
+    let recent = [...borrowingLog]
         .sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate))
         .slice(0, 5);
+    
+    // Check for overdue items - item is overdue if current date is after return date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to midnight for comparison
+    
+    recent = recent.map(entry => {
+        const returnDate = new Date(entry.returnDate);
+        returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+        
+        // Update status to overdue if past return date and not yet returned/partial
+        if ((entry.status === 'pending' || entry.status === 'on loan') && today > returnDate) {
+            return { ...entry, status: 'overdue' };
+        }
+        return entry;
+    });
     
     if (recent.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No records found</td></tr>';
@@ -538,6 +553,14 @@ function updateRecentBorrowingTable() {
                 return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
             }).join(', ');
             
+            // Add overdue indicator if applicable
+            let overdueIndicator = '';
+            if (entry.status === 'overdue') {
+                const returnDate = new Date(entry.returnDate);
+                const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
+                overdueIndicator = `<div class="mt-2"><span class="badge bg-danger">${daysOverdue} days overdue</span></div>`;
+            }
+            
             const actionButton = entry.status !== 'returned' ? 
                 `<button class="btn btn-success btn-sm w-100" onclick="showReturnModal(${entry.id})">
                     <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
@@ -563,6 +586,7 @@ function updateRecentBorrowingTable() {
                         <div class="mobile-card-label">Status:</div>
                         <div class="mobile-card-value">
                             <span class="badge ${statusClass}">${getStatusText(entry.status)}</span>
+                            ${overdueIndicator}
                         </div>
                     </div>
                     <div class="mobile-card-row">
@@ -591,6 +615,14 @@ function updateRecentBorrowingTable() {
                 return `${item.name}${item.quantity > 1 ? ` (${item.quantity})` : ''}${returnedText}`;
             }).join(', ');
             
+            // Add overdue indicator if applicable
+            let overdueInfo = '';
+            if (entry.status === 'overdue') {
+                const returnDate = new Date(entry.returnDate);
+                const daysOverdue = Math.floor((today - returnDate) / (1000 * 60 * 60 * 24));
+                overdueInfo = `<div><small class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>${daysOverdue} days overdue</small></div>`;
+            }
+            
             const actionButton = entry.status !== 'returned' ? 
                 `<button class="btn btn-success btn-sm" onclick="showReturnModal(${entry.id})">
                     <i class="bi bi-box-arrow-in-left me-1"></i>Return Items
@@ -603,7 +635,10 @@ function updateRecentBorrowingTable() {
                     <td>${itemsText}</td>
                     <td>${formatDate(entry.borrowDate)}</td>
                     <td>${formatDate(entry.returnDate)}</td>
-                    <td><span class="badge ${statusClass}">${getStatusText(entry.status)}</span></td>
+                    <td>
+                        <span class="badge ${statusClass}">${getStatusText(entry.status)}</span>
+                        ${overdueInfo}
+                    </td>
                     <td>${actionButton}</td>
                 </tr>
             `;
@@ -616,7 +651,8 @@ function updateRecentBorrowingTable() {
 // Get status text
 function getStatusText(status) {
     switch(status) {
-        case 'pending': return 'On loan';
+        case 'pending': 
+        case 'on loan': return 'On loan';
         case 'partial': return 'Partial return';
         case 'overdue': return 'Overdue';
         case 'returned': return 'Returned';
@@ -813,7 +849,7 @@ function processReturn() {
 function updateDashboardStats() {
     const totalItems = Object.keys(items).length;
     const availableItems = Object.values(inventory).reduce((sum, qty) => sum + qty, 0);
-    const activeBorrows = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue' || entry.status === 'partial').length;
+    const activeBorrows = borrowingLog.filter(entry => entry.status === 'pending' || entry.status === 'overdue' || entry.status === 'partial' || entry.status === 'on loan').length;
     const lowStock = Object.values(inventory).filter(qty => qty <= 3).length;
     
     document.getElementById('totalItems').textContent = totalItems;
@@ -1108,7 +1144,7 @@ function updateRecordsTable() {
         const returnDate = new Date(entry.returnDate);
         returnDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
         
-        if (entry.status === 'pending' && today > returnDate) {
+        if ((entry.status === 'pending' || entry.status === 'on loan') && today > returnDate) {
             return { ...entry, status: 'overdue' };
         }
         return entry;
