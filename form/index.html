@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Office Supplies Management System</title>
+      <link rel="icon" type="image/png" href="htbblogo.jpg">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+      <!-- Custom Styles -->
+      <link rel="stylesheet" href="styles.css">
+      <!-- Firebase SDK -->
+      <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+   </head>
+   <body>
+      <!-- Landing Screen -->
+      <div id="landingScreen" class="landing-screen">
+         <div class="shape shape-1"></div>
+         <div class="shape shape-2"></div>
+         <div class="shape shape-3"></div>
+         <div class="landing-content">
+            <h1 class="landing-title">
+               <img src="htbblogo.jpg" alt="HTBB Logo" class="logo">
+               Office Supplies Management System
+            </h1>
+            <p class="landing-subtitle">Efficiently track and manage office supplies borrowing</p>
+            <div class="choice-buttons">
+               <div class="choice-card" onclick="showBorrowingForm()">
+                  <div class="choice-icon">
+                     <i class="bi bi-pencil-square"></i>
+                  </div>
+                  <h3 class="choice-title">Borrow Office Supplies</h3>
+               </div>
+               <div class="choice-card" onclick="showAdminLogin()">
+                  <div class="choice-icon">
+                     <i class="bi bi-gear-fill"></i>
+                  </div>
+                  <h3 class="choice-title">Admin Portal</h3>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Borrowing Form Section -->
+      <div id="borrowingSection" class="app-section">
+         <header class="app-header">
+            <div class="container">
+               <div class="row align-items-center">
+                  <div class="col-md-6">
+                     <h1 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Office Supplies Request Form
+                     </h1>
+                  </div>
+                  <div class="col-md-6 text-md-end">
+                     <a href="#" class="back-button" onclick="showLandingScreen()">
+                     <i class="bi bi-arrow-left me-2"></i>Back to Home
+                     </a>
+                  </div>
+               </div>
+            </div>
+         </header>
+         <div class="container borrowing-container">
+            <div class="row">
+               <div class="col-lg-5">
+                  <div class="card">
+                     <div class="card-header">
+                        <i class="bi bi-clipboard-plus me-2"></i>Request Form
+                     </div>
+                     <div class="card-body">
+                        <form id="borrowForm">
+                           <div class="mb-4">
+                              <label class="form-label">Select Items to Borrow</label>
+                              <div class="office-supplies-list" id="officeSuppliesList">
+                                 <!-- Items will be loaded dynamically -->
+                              </div>
+                           </div>
+                           <div class="mb-3">
+                              <label for="borrowerName" class="form-label">Your Name</label>
+                              <input type="text" class="form-control" id="borrowerName" required>
+                           </div>
+                           <div class="mb-3">
+                              <label for="purpose" class="form-label">Purpose</label>
+                              <textarea class="form-control" id="purpose" rows="2" placeholder="(e.g. CHTBB, Alpha, ARG, Youth)" required></textarea>
+                           </div>
+                           <div class="mb-3">
+                              <label for="borrowDate" class="form-label">Borrow Date</label>
+                              <input type="date" class="form-control" id="borrowDate" required readonly>
+                           </div>
+                           <div class="mb-3">
+                              <label for="returnDate" class="form-label">Expected Return Date</label>
+                              <input type="date" class="form-control" id="returnDate" required>
+                           </div>
+                           <!-- Summary Card -->
+                           <div class="summary-card" id="summaryCard" style="display: none;">
+                              <div class="summary-title">
+                                 <i class="bi bi-cart-check me-2"></i>Request Summary
+                              </div>
+                              <div id="summaryItems">
+                                 <!-- Summary items will be loaded dynamically -->
+                              </div>
+                           </div>
+                           <button type="submit" class="btn btn-primary w-100">
+                           <i class="bi bi-check-circle me-2"></i>Submit Request
+                           </button>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-lg-7">
+                  <div class="card">
+                     <div class="card-header">
+                        <i class="bi bi-clock-history me-2"></i>Recent Borrowing Records
+                     </div>
+                     <div class="card-body">
+                        <div class="table-responsive">
+                           <table class="table">
+                              <thead>
+                                 <tr>
+                                    <th>Borrower</th>
+                                    <th>Items</th>
+                                    <th>Borrow Date</th>
+                                    <th>Return Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                 </tr>
+                              </thead>
+                              <tbody id="recentBorrowingTable">
+                                 <tr>
+                                    <td colspan="6" class="text-center text-muted">Loading records...</td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                        <!-- Mobile Table View -->
+                        <div class="mobile-table-container" id="recentBorrowingMobile" style="display: none;">
+                           <!-- Mobile cards will be loaded dynamically -->
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Admin Dashboard Section -->
+      <div id="adminSection" class="app-section">
+         <header class="app-header">
+            <div class="container">
+               <div class="row align-items-center">
+                  <div class="col-6 d-flex align-items-center">
+                     <button class="mobile-nav-toggle" onclick="toggleMobileNav()">
+                     <i class="bi bi-list"></i>
+                     </button>
+                     <h1 class="mb-0">
+                        <i class="bi bi-gear-fill me-2"></i>Admin Dashboard
+                     </h1>
+                  </div>
+                  <div class="col-6 text-end">
+                     <a href="#" class="back-button d-none d-md-inline-block" onclick="showLandingScreen()">
+                     <i class="bi bi-arrow-left me-2"></i>Back to Home
+                     </a>
+                  </div>
+               </div>
+            </div>
+         </header>
+         <div class="container admin-container">
+            <div class="row">
+               <div class="col-md-3 d-none d-lg-block">
+                  <div class="sidebar">
+                     <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showAdminSection('dashboard')">
+                        <i class="bi bi-speedometer2"></i>Dashboard
+                        </a>
+                        <a class="nav-link" href="#" onclick="showAdminSection('inventory')">
+                        <i class="bi bi-box"></i>Inventory Management
+                        </a>
+                        <a class="nav-link" href="#" onclick="showAdminSection('status')">
+                        <i class="bi bi-list-check"></i>Item Status
+                        </a>
+                        <a class="nav-link" href="#" onclick="showAdminSection('records')">
+                        <i class="bi bi-clock-history"></i>All Records
+                        </a>
+                     </nav>
+                  </div>
+               </div>
+               <div class="col-md-12 col-lg-9">
+                  <!-- Dashboard Section -->
+                  <div id="adminDashboard" class="content-section active">
+                     <h2 class="mb-4">Dashboard Overview</h2>
+                     <div class="row">
+                        <div class="col-md-6 col-lg-3">
+                           <div class="stat-card">
+                              <div class="stat-icon primary">
+                                 <i class="bi bi-box"></i>
+                              </div>
+                              <div class="stat-value" id="totalItems">0</div>
+                              <div class="stat-label">Total Items</div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="stat-card">
+                              <div class="stat-icon success">
+                                 <i class="bi bi-check-circle"></i>
+                              </div>
+                              <div class="stat-value" id="availableItems">0</div>
+                              <div class="stat-label">Available Items</div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="stat-card">
+                              <div class="stat-icon warning">
+                                 <i class="bi bi-arrow-repeat"></i>
+                              </div>
+                              <div class="stat-value" id="activeBorrows">0</div>
+                              <div class="stat-label">Active Borrows</div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="stat-card">
+                              <div class="stat-icon danger">
+                                 <i class="bi bi-exclamation-triangle"></i>
+                              </div>
+                              <div class="stat-value" id="lowStock">0</div>
+                              <div class="stat-label">Low Stock Items</div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="card">
+                        <div class="card-header">
+                           <i class="bi bi-graph-up me-2"></i>Recent Activity
+                        </div>
+                        <div class="card-body">
+                           <div id="recentActivity">
+                              <p class="text-muted">Loading recent activity...</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Inventory Management Section -->
+                  <div id="adminInventory" class="content-section">
+                     <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Inventory Management</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                        <i class="bi bi-plus-circle me-2"></i>Add New Item
+                        </button>
+                     </div>
+                     <!-- Filter Section -->
+                     <div class="filter-section">
+                        <div class="filter-title">Filter by Stock Level</div>
+                        <div class="filter-buttons">
+                           <button class="filter-btn active" onclick="filterItems('all')">
+                           <i class="bi bi-grid-3x3-gap me-1"></i>All Items
+                           </button>
+                           <button class="filter-btn high-stock" onclick="filterItems('high')">
+                           <i class="bi bi-check-circle me-1"></i>High Stock (>6)
+                           </button>
+                           <button class="filter-btn medium-stock" onclick="filterItems('medium')">
+                           <i class="bi bi-dash-circle me-1"></i>Medium Stock (4-6)
+                           </button>
+                           <button class="filter-btn low-stock" onclick="filterItems('low')">
+                           <i class="bi bi-exclamation-triangle me-1"></i>Low Stock (≤3)
+                           </button>
+                        </div>
+                     </div>
+                     <div id="inventoryList">
+                        <p class="text-muted">Loading inventory...</p>
+                     </div>
+                  </div>
+                  <!-- Item Status Section -->
+                  <div id="adminStatus" class="content-section">
+                     <h2 class="mb-4">Item Status Overview</h2>
+                     <div class="status-tabs">
+                        <button class="status-tab active" onclick="showStatusTab('pending')">
+                        On Loan
+                        <span class="badge bg-warning" id="pendingCount">0</span>
+                        </button>
+                        <button class="status-tab" onclick="showStatusTab('overdue')">
+                        Overdue
+                        <span class="badge bg-danger" id="overdueCount">0</span>
+                        </button>
+                        <button class="status-tab" onclick="showStatusTab('partial')">
+                        Partial Return
+                        <span class="badge bg-info" id="partialCount">0</span>
+                        </button>
+                        <button class="status-tab" onclick="showStatusTab('returned')">
+                        Returned
+                        <span class="badge bg-success" id="returnedCount">0</span>
+                        </button>
+                     </div>
+                     <!-- Pending Items -->
+                     <div id="pendingItems" class="status-content active">
+                        <div class="card">
+                           <div class="card-header">
+                              <i class="bi bi-clock me-2"></i>Items On Loan
+                           </div>
+                           <div class="card-body">
+                              <div id="pendingItemsList">
+                                 <p class="text-muted">Loading items on loan...</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Overdue Items -->
+                     <div id="overdueItems" class="status-content">
+                        <div class="card">
+                           <div class="card-header">
+                              <i class="bi bi-exclamation-triangle me-2"></i>Overdue Items
+                           </div>
+                           <div class="card-body">
+                              <div id="overdueItemsList">
+                                 <p class="text-muted">Loading overdue items...</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Partial Return Items -->
+                     <div id="partialItems" class="status-content">
+                        <div class="card">
+                           <div class="card-header">
+                              <i class="bi bi-arrow-left-right me-2"></i>Partial Returns
+                           </div>
+                           <div class="card-body">
+                              <div id="partialItemsList">
+                                 <p class="text-muted">Loading partial returns...</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Returned Items -->
+                     <div id="returnedItems" class="status-content">
+                        <div class="card">
+                           <div class="card-header">
+                              <i class="bi bi-check-circle me-2"></i>Recently Returned
+                           </div>
+                           <div class="card-body">
+                              <div id="returnedItemsList">
+                                 <p class="text-muted">Loading returned items...</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Records Section -->
+                  <div id="adminRecords" class="content-section">
+                     <h2 class="mb-4">All Borrowing Records</h2>
+                     <div class="mb-3">
+                        <div class="input-group">
+                           <span class="input-group-text"><i class="bi bi-search"></i></span>
+                           <input type="text" class="form-control" id="recordsSearch" placeholder="Search by borrower name or purpose...">
+                        </div>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table">
+                           <thead>
+                              <tr>
+                                 <th>ID</th>
+                                 <th>Borrower</th>
+                                 <th>Items</th>
+                                 <th>Purpose</th>
+                                 <th>Borrow Date</th>
+                                 <th>Return Date</th>
+                                 <th>Status</th>
+                                 <th>Action</th>
+                              </tr>
+                           </thead>
+                           <tbody id="recordsTableBody">
+                              <tr>
+                                 <td colspan="8" class="text-center text-muted">Loading records...</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                     <!-- Mobile Table View -->
+                     <div class="mobile-table-container" id="recordsMobile" style="display: none;">
+                        <!-- Mobile cards will be loaded dynamically -->
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Mobile Navigation Menu -->
+      <div class="mobile-nav-menu" id="mobileNavMenu">
+         <div class="mobile-nav-header">
+            <h5 class="mb-0">Admin Menu</h5>
+            <button class="mobile-nav-close" onclick="toggleMobileNav()">
+            <i class="bi bi-x"></i>
+            </button>
+         </div>
+         <div class="mobile-nav-body">
+            <a class="mobile-nav-link active" href="#" onclick="showAdminSection('dashboard'); toggleMobileNav();">
+            <i class="bi bi-speedometer2"></i>Dashboard
+            </a>
+            <a class="mobile-nav-link" href="#" onclick="showAdminSection('inventory'); toggleMobileNav();">
+            <i class="bi bi-box"></i>Inventory Management
+            </a>
+            <a class="mobile-nav-link" href="#" onclick="showAdminSection('status'); toggleMobileNav();">
+            <i class="bi bi-list-check"></i>Item Status
+            </a>
+            <a class="mobile-nav-link" href="#" onclick="showAdminSection('records'); toggleMobileNav();">
+            <i class="bi bi-clock-history"></i>All Records
+            </a>
+            <hr>
+            <a class="mobile-nav-link" href="#" onclick="showLandingScreen(); toggleMobileNav();">
+            <i class="bi bi-house"></i>Back to Home
+            </a>
+         </div>
+      </div>
+      <!-- Mobile Navigation Overlay -->
+      <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileNav()"></div>
+      <!-- Admin Login Modal -->
+      <div class="modal fade login-modal" id="adminLoginModal" tabindex="-1">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Admin Login</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="login-icon">
+                     <i class="bi bi-shield-lock"></i>
+                  </div>
+                  <form id="adminLoginForm">
+                     <div class="mb-3">
+                        <label for="adminPassword" class="form-label">Admin Password</label>
+                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password" required>
+                     </div>
+                     <button type="submit" class="btn btn-primary w-100">
+                     <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                     </button>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Add Item Modal -->
+      <div class="modal fade" id="addItemModal" tabindex="-1">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Add New Office Supplies Item</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <form id="addItemForm">
+                     <div class="mb-3">
+                        <label for="itemName" class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="itemName" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="itemQuantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="itemQuantity" min="0" required>
+                     </div>
+                  </form>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" onclick="addNewItem()">Add Item</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Edit Item Modal -->
+      <div class="modal fade" id="editItemModal" tabindex="-1">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Edit Office Supplies Item</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <form id="editItemForm">
+                     <input type="hidden" id="editItemId">
+                     <div class="mb-3">
+                        <label for="editItemName" class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="editItemName" required>
+                     </div>
+                  </form>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" onclick="updateItem()">Update Item</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Return Items Modal -->
+      <div class="modal fade" id="returnItemsModal" tabindex="-1">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">
+                     <i class="bi bi-box-arrow-in-left me-2"></i>Return Items
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="mb-3">
+                     <strong>Borrower:</strong> <span id="returnBorrowerName"></span>
+                  </div>
+                  <div class="mb-3">
+                     <strong>Purpose:</strong> <span id="returnPurpose"></span>
+                  </div>
+                  <hr>
+                  <div id="returnItemsList">
+                     <!-- Return items will be loaded dynamically -->
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-success" onclick="processReturn()">
+                  <i class="bi bi-check-circle me-2"></i>Process Return
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Toast Container -->
+      <div class="toast-container" id="toastContainer"></div>
+      <!-- Connection Status -->
+      <div class="connection-status disconnected" id="connectionStatus">
+         <i class="bi bi-wifi-off"></i>
+         <span>Disconnected</span>
+      </div>
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <!-- Custom JavaScript -->
+      <script src="script.js"></script>
+   </body>
+</html>
