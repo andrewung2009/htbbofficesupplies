@@ -1,529 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Office Supplies Management System</title>
-      <link rel="icon" type="image/png" href="htbblogo.jpg">
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-      <!-- Custom Styles -->
-      <link rel="stylesheet" href="styles.css">
-      <!-- Firebase SDK -->
-      <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-   </head>
-   <body>
-      <!-- Landing Screen -->
-      <div id="landingScreen" class="landing-screen">
-         <div class="shape shape-1"></div>
-         <div class="shape shape-2"></div>
-         <div class="shape shape-3"></div>
-         <div class="landing-content">
-            <h1 class="landing-title">
-               <img src="htbblogo.jpg" alt="HTBB Logo" class="logo">
-               Office Supplies Management System
-            </h1>
-            <p class="landing-subtitle">Efficiently track and manage office supplies borrowing</p>
-            <div class="choice-buttons">
-               <div class="choice-card" onclick="showBorrowingForm()">
-                  <div class="choice-icon">
-                     <i class="bi bi-pencil-square"></i>
-                  </div>
-                  <h3 class="choice-title">Borrow Office Supplies</h3>
-               </div>
-               <div class="choice-card" onclick="showAdminLogin()">
-                  <div class="choice-icon">
-                     <i class="bi bi-gear-fill"></i>
-                  </div>
-                  <h3 class="choice-title">Admin Portal</h3>
-               </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Office Supplies Management System</title>
+    <link rel="icon" type="image/png" href="htbblogo.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #06ffa5;
+            --danger-color: #ff006e;
+            --warning-color: #ffbe0b;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .login-screen {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .login-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .google-signin-btn {
+            background: white;
+            color: var(--dark-text);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .google-signin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(255, 0, 110, 0.2);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        /* Floating shapes for decoration */
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: white;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: white;
+            top: 50%;
+            right: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 2rem;
+            }
+            
+            .login-title {
+                font-size: 1.75rem;
+            }
+            
+            .login-subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-screen">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        
+        <div class="login-content">
+            <div class="login-card">
+                <img src="htbblogo.jpg" alt="HTBB Logo" class="logo">
+                <h1 class="login-title">Welcome Back</h1>
+                <p class="login-subtitle">Sign in to access the Office Supplies Management System</p>
+                
+                <button id="googleSignInBtn" class="google-signin-btn">
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+                
+                <div id="errorMessage" class="error-message">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorText"></span>
+                </div>
             </div>
-         </div>
-      </div>
-      <!-- Borrowing Form Section -->
-      <div id="borrowingSection" class="app-section">
-         <header class="app-header">
-            <div class="container">
-               <div class="row align-items-center">
-                  <div class="col-md-6">
-                     <h1 class="mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>Office Supplies Request Form
-                     </h1>
-                  </div>
-                  <div class="col-md-6 text-md-end">
-                     <a href="#" class="back-button" onclick="showLandingScreen()">
-                     <i class="bi bi-arrow-left me-2"></i>Back to Home
-                     </a>
-                  </div>
-               </div>
-            </div>
-         </header>
-         <div class="container borrowing-container">
-            <div class="row">
-               <div class="col-lg-5">
-                  <div class="card">
-                     <div class="card-header">
-                        <i class="bi bi-clipboard-plus me-2"></i>Request Form
-                     </div>
-                     <div class="card-body">
-                        <form id="borrowForm">
-                           <div class="mb-4">
-                              <label class="form-label">Select Items to Borrow</label>
-                              <div class="office-supplies-list" id="officeSuppliesList">
-                                 <!-- Items will be loaded dynamically -->
-                              </div>
-                           </div>
-                           <div class="mb-3">
-                              <label for="borrowerName" class="form-label">Your Name</label>
-                              <input type="text" class="form-control" id="borrowerName" required>
-                           </div>
-                           <div class="mb-3">
-                              <label for="purpose" class="form-label">Purpose</label>
-                              <textarea class="form-control" id="purpose" rows="2" placeholder="(e.g. CHTBB, Alpha, ARG, Youth)" required></textarea>
-                           </div>
-                           <div class="mb-3">
-                              <label for="borrowDate" class="form-label">Borrow Date</label>
-                              <input type="date" class="form-control" id="borrowDate" required readonly>
-                           </div>
-                           <div class="mb-3">
-                              <label for="returnDate" class="form-label">Expected Return Date</label>
-                              <input type="date" class="form-control" id="returnDate" required>
-                           </div>
-                           <!-- Summary Card -->
-                           <div class="summary-card" id="summaryCard" style="display: none;">
-                              <div class="summary-title">
-                                 <i class="bi bi-cart-check me-2"></i>Request Summary
-                              </div>
-                              <div id="summaryItems">
-                                 <!-- Summary items will be loaded dynamically -->
-                              </div>
-                           </div>
-                           <button type="submit" class="btn btn-primary w-100">
-                           <i class="bi bi-check-circle me-2"></i>Submit Request
-                           </button>
-                        </form>
-                     </div>
-                  </div>
-               </div>
-               <div class="col-lg-7">
-                  <div class="card">
-                     <div class="card-header">
-                        <i class="bi bi-clock-history me-2"></i>Recent Borrowing Records
-                     </div>
-                     <div class="card-body">
-                        <div class="table-responsive">
-                           <table class="table">
-                              <thead>
-                                 <tr>
-                                    <th>Borrower</th>
-                                    <th>Items</th>
-                                    <th>Borrow Date</th>
-                                    <th>Return Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                 </tr>
-                              </thead>
-                              <tbody id="recentBorrowingTable">
-                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">Loading records...</td>
-                                 </tr>
-                              </tbody>
-                           </table>
-                        </div>
-                        <!-- Mobile Table View -->
-                        <div class="mobile-table-container" id="recentBorrowingMobile" style="display: none;">
-                           <!-- Mobile cards will be loaded dynamically -->
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Admin Dashboard Section -->
-      <div id="adminSection" class="app-section">
-         <header class="app-header">
-            <div class="container">
-               <div class="row align-items-center">
-                  <div class="col-6 d-flex align-items-center">
-                     <button class="mobile-nav-toggle" onclick="toggleMobileNav()">
-                     <i class="bi bi-list"></i>
-                     </button>
-                     <h1 class="mb-0">
-                        <i class="bi bi-gear-fill me-2"></i>Admin Dashboard
-                     </h1>
-                  </div>
-                  <div class="col-6 text-end">
-                     <a href="#" class="back-button d-none d-md-inline-block" onclick="showLandingScreen()">
-                     <i class="bi bi-arrow-left me-2"></i>Back to Home
-                     </a>
-                  </div>
-               </div>
-            </div>
-         </header>
-         <div class="container admin-container">
-            <div class="row">
-               <div class="col-md-3 d-none d-lg-block">
-                  <div class="sidebar">
-                     <nav class="nav flex-column">
-                        <a class="nav-link active" href="#" onclick="showAdminSection('dashboard')">
-                        <i class="bi bi-speedometer2"></i>Dashboard
-                        </a>
-                        <a class="nav-link" href="#" onclick="showAdminSection('inventory')">
-                        <i class="bi bi-box"></i>Inventory Management
-                        </a>
-                        <a class="nav-link" href="#" onclick="showAdminSection('status')">
-                        <i class="bi bi-list-check"></i>Item Status
-                        </a>
-                        <a class="nav-link" href="#" onclick="showAdminSection('records')">
-                        <i class="bi bi-clock-history"></i>All Records
-                        </a>
-                     </nav>
-                  </div>
-               </div>
-               <div class="col-md-12 col-lg-9">
-                  <!-- Dashboard Section -->
-                  <div id="adminDashboard" class="content-section active">
-                     <h2 class="mb-4">Dashboard Overview</h2>
-                     <div class="row">
-                        <div class="col-md-6 col-lg-3">
-                           <div class="stat-card">
-                              <div class="stat-icon primary">
-                                 <i class="bi bi-box"></i>
-                              </div>
-                              <div class="stat-value" id="totalItems">0</div>
-                              <div class="stat-label">Total Items</div>
-                           </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                           <div class="stat-card">
-                              <div class="stat-icon success">
-                                 <i class="bi bi-check-circle"></i>
-                              </div>
-                              <div class="stat-value" id="availableItems">0</div>
-                              <div class="stat-label">Available Items</div>
-                           </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                           <div class="stat-card">
-                              <div class="stat-icon warning">
-                                 <i class="bi bi-arrow-repeat"></i>
-                              </div>
-                              <div class="stat-value" id="activeBorrows">0</div>
-                              <div class="stat-label">Active Borrows</div>
-                           </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                           <div class="stat-card">
-                              <div class="stat-icon danger">
-                                 <i class="bi bi-exclamation-triangle"></i>
-                              </div>
-                              <div class="stat-value" id="lowStock">0</div>
-                              <div class="stat-label">Low Stock Items</div>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="card">
-                        <div class="card-header">
-                           <i class="bi bi-graph-up me-2"></i>Recent Activity
-                        </div>
-                        <div class="card-body">
-                           <div id="recentActivity">
-                              <p class="text-muted">Loading recent activity...</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- Inventory Management Section -->
-                  <div id="adminInventory" class="content-section">
-                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Inventory Management</h2>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-                        <i class="bi bi-plus-circle me-2"></i>Add New Item
-                        </button>
-                     </div>
-                     <!-- Filter Section -->
-                     <div class="filter-section">
-                        <div class="filter-title">Filter by Stock Level</div>
-                        <div class="filter-buttons">
-                           <button class="filter-btn active" onclick="filterItems('all')">
-                           <i class="bi bi-grid-3x3-gap me-1"></i>All Items
-                           </button>
-                           <button class="filter-btn high-stock" onclick="filterItems('high')">
-                           <i class="bi bi-check-circle me-1"></i>High Stock (>6)
-                           </button>
-                           <button class="filter-btn medium-stock" onclick="filterItems('medium')">
-                           <i class="bi bi-dash-circle me-1"></i>Medium Stock (4-6)
-                           </button>
-                           <button class="filter-btn low-stock" onclick="filterItems('low')">
-                           <i class="bi bi-exclamation-triangle me-1"></i>Low Stock (≤3)
-                           </button>
-                        </div>
-                     </div>
-                     <div id="inventoryList">
-                        <p class="text-muted">Loading inventory...</p>
-                     </div>
-                  </div>
-                  <!-- Item Status Section -->
-                  <div id="adminStatus" class="content-section">
-                     <h2 class="mb-4">Item Status Overview</h2>
-                     <div class="status-tabs">
-                        <button class="status-tab active" onclick="showStatusTab('pending')">
-                        On Loan
-                        <span class="badge bg-warning" id="pendingCount">0</span>
-                        </button>
-                        <button class="status-tab" onclick="showStatusTab('overdue')">
-                        Overdue
-                        <span class="badge bg-danger" id="overdueCount">0</span>
-                        </button>
-                        <button class="status-tab" onclick="showStatusTab('partial')">
-                        Partial Return
-                        <span class="badge bg-info" id="partialCount">0</span>
-                        </button>
-                        <button class="status-tab" onclick="showStatusTab('returned')">
-                        Returned
-                        <span class="badge bg-success" id="returnedCount">0</span>
-                        </button>
-                     </div>
-                     <!-- Pending Items -->
-                     <div id="pendingItems" class="status-content active">
-                        <div class="card">
-                           <div class="card-header">
-                              <i class="bi bi-clock me-2"></i>Items On Loan
-                           </div>
-                           <div class="card-body">
-                              <div id="pendingItemsList">
-                                 <p class="text-muted">Loading items on loan...</p>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Overdue Items -->
-                     <div id="overdueItems" class="status-content">
-                        <div class="card">
-                           <div class="card-header">
-                              <i class="bi bi-exclamation-triangle me-2"></i>Overdue Items
-                           </div>
-                           <div class="card-body">
-                              <div id="overdueItemsList">
-                                 <p class="text-muted">Loading overdue items...</p>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Partial Return Items -->
-                     <div id="partialItems" class="status-content">
-                        <div class="card">
-                           <div class="card-header">
-                              <i class="bi bi-arrow-left-right me-2"></i>Partial Returns
-                           </div>
-                           <div class="card-body">
-                              <div id="partialItemsList">
-                                 <p class="text-muted">Loading partial returns...</p>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Returned Items -->
-                     <div id="returnedItems" class="status-content">
-                        <div class="card">
-                           <div class="card-header">
-                              <i class="bi bi-check-circle me-2"></i>Recently Returned
-                           </div>
-                           <div class="card-body">
-                              <div id="returnedItemsList">
-                                 <p class="text-muted">Loading returned items...</p>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- Records Section -->
-                  <div id="adminRecords" class="content-section">
-                     <h2 class="mb-4">All Borrowing Records</h2>
-                     <div class="mb-3">
-                        <div class="input-group">
-                           <span class="input-group-text"><i class="bi bi-search"></i></span>
-                           <input type="text" class="form-control" id="recordsSearch" placeholder="Search by borrower name or purpose...">
-                        </div>
-                     </div>
-                     <div class="table-responsive">
-                        <table class="table">
-                           <thead>
-                              <tr>
-                                 <th>ID</th>
-                                 <th>Borrower</th>
-                                 <th>Items</th>
-                                 <th>Purpose</th>
-                                 <th>Borrow Date</th>
-                                 <th>Return Date</th>
-                                 <th>Status</th>
-                                 <th>Action</th>
-                              </tr>
-                           </thead>
-                           <tbody id="recordsTableBody">
-                              <tr>
-                                 <td colspan="8" class="text-center text-muted">Loading records...</td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                     <!-- Mobile Table View -->
-                     <div class="mobile-table-container" id="recordsMobile" style="display: none;">
-                        <!-- Mobile cards will be loaded dynamically -->
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Mobile Navigation Menu -->
-      <div class="mobile-nav-menu" id="mobileNavMenu">
-         <div class="mobile-nav-header">
-            <h5 class="mb-0">Admin Menu</h5>
-            <button class="mobile-nav-close" onclick="toggleMobileNav()">
-            <i class="bi bi-x"></i>
-            </button>
-         </div>
-         <div class="mobile-nav-body">
-            <a class="mobile-nav-link active" href="#" onclick="showAdminSection('dashboard'); toggleMobileNav();">
-            <i class="bi bi-speedometer2"></i>Dashboard
-            </a>
-            <a class="mobile-nav-link" href="#" onclick="showAdminSection('inventory'); toggleMobileNav();">
-            <i class="bi bi-box"></i>Inventory Management
-            </a>
-            <a class="mobile-nav-link" href="#" onclick="showAdminSection('status'); toggleMobileNav();">
-            <i class="bi bi-list-check"></i>Item Status
-            </a>
-            <a class="mobile-nav-link" href="#" onclick="showAdminSection('records'); toggleMobileNav();">
-            <i class="bi bi-clock-history"></i>All Records
-            </a>
-            <hr>
-            <a class="mobile-nav-link" href="#" onclick="showLandingScreen(); toggleMobileNav();">
-            <i class="bi bi-house"></i>Back to Home
-            </a>
-         </div>
-      </div>
-      <!-- Mobile Navigation Overlay -->
-      <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileNav()"></div>
-      <!-- Admin Login Modal -->
-      <div class="modal fade login-modal" id="adminLoginModal" tabindex="-1">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">Admin Login</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-               </div>
-               <div class="modal-body">
-                  <div class="login-icon">
-                     <i class="bi bi-shield-lock"></i>
-                  </div>
-                  <form id="adminLoginForm">
-                     <div class="mb-3">
-                        <label for="adminPassword" class="form-label">Admin Password</label>
-                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password" required>
-                     </div>
-                     <button type="submit" class="btn btn-primary w-100">
-                     <i class="bi bi-box-arrow-in-right me-2"></i>Login
-                     </button>
-                  </form>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Add Item Modal -->
-      <div class="modal fade" id="addItemModal" tabindex="-1">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">Add New Office Supplies Item</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-               </div>
-               <div class="modal-body">
-                  <form id="addItemForm">
-                     <div class="mb-3">
-                        <label for="itemName" class="form-label">Item Name</label>
-                        <input type="text" class="form-control" id="itemName" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="itemQuantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="itemQuantity" min="0" required>
-                     </div>
-                  </form>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" onclick="addNewItem()">Add Item</button>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Edit Item Modal -->
-      <div class="modal fade" id="editItemModal" tabindex="-1">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">Edit Office Supplies Item</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-               </div>
-               <div class="modal-body">
-                  <form id="editItemForm">
-                     <input type="hidden" id="editItemId">
-                     <div class="mb-3">
-                        <label for="editItemName" class="form-label">Item Name</label>
-                        <input type="text" class="form-control" id="editItemName" required>
-                     </div>
-                  </form>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" onclick="updateItem()">Update Item</button>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Return Items Modal -->
-      <div class="modal fade" id="returnItemsModal" tabindex="-1">
-         <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">
-                     <i class="bi bi-box-arrow-in-left me-2"></i>Return Items
-                  </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-               </div>
-               <div class="modal-body">
-                  <div class="mb-3">
-                     <strong>Borrower:</strong> <span id="returnBorrowerName"></span>
-                  </div>
-                  <div class="mb-3">
-                     <strong>Purpose:</strong> <span id="returnPurpose"></span>
-                  </div>
-                  <hr>
-                  <div id="returnItemsList">
-                     <!-- Return items will be loaded dynamically -->
-                  </div>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-success" onclick="processReturn()">
-                  <i class="bi bi-check-circle me-2"></i>Process Return
-                  </button>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- Toast Container -->
-      <div class="toast-container" id="toastContainer"></div>
-      <!-- Connection Status -->
-      <div class="connection-status disconnected" id="connectionStatus">
-         <i class="bi bi-wifi-off"></i>
-         <span>Disconnected</span>
-      </div>
-      <!-- Bootstrap JS -->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-      <!-- Custom JavaScript -->
-      <script src="script.js"></script>
-   </body>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase configuration (same as your main app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCeQQz9A6r3gMRWR-gQ4G62sMG3HO9NK70",
+            authDomain: "stationery-htbb.firebaseapp.com",
+            databaseURL: "https://stationery-htbb-default-rtdb.firebaseio.com/",
+            projectId: "stationery-htbb",
+            storageBucket: "stationery-htbb.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456789012345678"
+        };
+
+        // DOM elements
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            
+            // Check if user is already signed in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in, redirect to /form
+                    window.location.href = '/form';
+                }
+            });
+
+            // Google Sign-In button click handler
+            googleSignInBtn.addEventListener('click', () => {
+                // Show loading state
+                loadingSpinner.style.display = 'inline-block';
+                googleSignInBtn.disabled = true;
+                errorMessage.style.display = 'none';
+
+                // Create Google provider
+                const provider = new firebase.auth.GoogleAuthProvider();
+
+                // Sign in with popup
+                auth.signInWithPopup(provider)
+                    .then((result) => {
+                        // This gives you a Google Access Token.
+                        const credential = result.credential;
+                        const token = credential.accessToken;
+                        // The signed-in user info.
+                        const user = result.user;
+                        
+                        // Redirect to /form after successful login
+                        window.location.href = '/form';
+                    })
+                    .catch((error) => {
+                        // Handle Errors here.
+                        const errorCode = error.code;
+                        const errorMessageText = error.message;
+                        // The email of the user's account used.
+                        const email = error.email;
+                        // The firebase.auth.AuthCredential type that was used.
+                        const credential = error.credential;
+                        
+                        // Show error message
+                        errorText.textContent = errorMessageText;
+                        errorMessage.style.display = 'block';
+                        
+                        // Reset button state
+                        loadingSpinner.style.display = 'none';
+                        googleSignInBtn.disabled = false;
+                    });
+            });
+        } catch (error) {
+            errorText.textContent = "Failed to initialize Firebase: " + error.message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
 </html>
