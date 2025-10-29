@@ -2013,6 +2013,30 @@
         </div>
     </div>
 
+    <!-- Thank You Modal -->
+    <div class="modal fade" id="thankYouModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Thank You!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="mb-3">Thank you for returning all items!</h4>
+                    <p class="text-muted">Your return has been processed successfully. We appreciate your promptness in returning the borrowed items.</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="bi bi-check-circle me-2"></i>Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -2903,13 +2927,15 @@
             if (database) {
                 database.ref().update({ ...updates, ...inventoryUpdates })
                     .then(() => {
-                        // Close modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('returnItemsModal'));
-                        if (modal) modal.hide();
+                        // Close return modal
+                        const returnModal = bootstrap.Modal.getInstance(document.getElementById('returnItemsModal'));
+                        if (returnModal) returnModal.hide();
                         
                         // Show success message
                         if (allItemsReturned) {
-                            showToast('success', 'All Items Returned', 'All items have been successfully returned.');
+                            // Show thank you modal instead of toast
+                            const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+                            thankYouModal.show();
                         } else {
                             showToast('success', 'Partial Return Processed', 'Selected items have been returned. Some items are still on loan.');
                         }
